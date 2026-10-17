@@ -6,7 +6,7 @@ const address1="addr_test1"+"a".repeat(45);
 const address2="addr_test1"+"b".repeat(45);
 function order(id:string,side:"BUY"|"SELL",price="260000000",quantity="1000000",ticker="AAPL"):StockLimitOrder{
  return {id,ticker,side,limitPriceMicros:price,quantityMicros:quantity,
- owner:side==="BUY"?address1:address2,nonce:id==="buy-0001"?"a".repeat(32):("b"+id.padEnd(31,"1")).slice(0,32),
+ owner:side==="BUY"?address1:address2,nonce:Buffer.from(id,"utf8").toString("hex").padEnd(32,"0").slice(0,32),
  lockedCollateralUtxo:null,createdAt:new Date(at.getTime()-1000).toISOString(),expiresAt:new Date(at.getTime()+60000).toISOString()};
 }
 test("price-time priority yields exact micro-unit limit crossing",()=>{
