@@ -32,7 +32,7 @@ fn payout(total:Int,long_margin:Int,size:Int,entry:Int,mark:Int)->Int {
  if marked_long < 0 {0} else if marked_long > total {total} else {marked_long}
 }
 fn paid_to(outputs:List<Output>,recipient:Address,policy:PolicyId,asset:AssetName)->Int {
- list.foldl(outputs,0,fn(sum,output) {
+ list.foldl(outputs,0,fn(output,sum) {
    if output.address == recipient {sum + assets.quantity_of(output.value,policy,asset)} else {sum}
  })
 }
