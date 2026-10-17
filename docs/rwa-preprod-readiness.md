@@ -70,7 +70,7 @@ still declares stock-specific lifecycle proof missing.
 
 1. Configure independent **licensed** Ed25519-signed US equity quote feeds; a
    TradingView iframe is NOT a legal data source for settlement.
-2. Provide a Blockfrost Preprod server credential and verify real wallet UTxOs.
+2. Configure the Blockfrost Preprod server credential for existing certificate metadata verification; the wallet preflight can already use public Koios UTxO reads.
 3. An independent security review must verify the separate stock-pair Aiken
    escrow, especially unilateral timeout recovery, oracle authorization,
    transaction validity windows, quote conservation and denial-of-service cases.
