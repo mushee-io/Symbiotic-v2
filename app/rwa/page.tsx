@@ -2,6 +2,7 @@
 import Link from "next/link";
 import {useEffect,useMemo,useState} from "react";
 import {RwaReferenceChart} from "@/components/RwaReferenceChart";
+import {RwaWalletPreflight} from "@/components/RwaWalletPreflight";
 import {RWA_MARKETS,type RwaMarket,marketSession} from "@/lib/rwa-market";
 import styles from "./markets.module.css";
 
@@ -140,6 +141,8 @@ export default function RwaMarkets(){
     <button className={styles.submit} disabled>{side} {selected.ticker} — NOT LIVE</button>
     <p className={styles.warning}>This is a stock-trading interface prototype. There is no issued {selected.ticker} share-backed Cardano asset, verified price oracle, orderbook, liquidity or deployed settlement contract. No stock trade can be placed.</p>
     <Link className={styles.ticketLink} href="/portfolio">VIEW PREPROD PORTFOLIO ↗</Link>
+    <RwaWalletPreflight />
+    <div className={styles.sessionNote}><span>STOCK PRICE SAFETY</span><p>Execution-quality prices require two independently signed and fresh sources. The chart is research-only; no settlement authorization is configured.</p></div>
     <div className={styles.sessionNote}><span>STOCK MARKET TIMING</span><p>US regular session: 9:30 am–4 pm New York time, subject to the reviewed NYSE 2026–2028 holidays and early closes. {session?.holiday?"Closed for "+session.holiday+". ":""}Pre-market, after-hours and overnight labels are reference timings only; halts and on-chain execution windows are not integrated.</p></div>
     {error?<p className={styles.error}>{error} — local reference list shown.</p>:null}
    </aside>
