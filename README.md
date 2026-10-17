@@ -207,3 +207,26 @@ Set `SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID` to a **Preprod** project ID in the ser
 - `/stats`: latest Cardano Preprod network block/epoch metrics, per-address transaction activity, and an explicitly local opt-in watchlist leaderboard of up to five public Preprod addresses, sorted by address transaction count. **Not** protocol-wide trading statistics, traders, revenue, ROI or TVL.
 
 The dashboards require a **server-side** `SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID` for the Preprod Blockfrost provider. Without it, requests fail closed rather than showing mock balance or returns. Caution: network-wide data is clearly marked as Cardano Preprod network data, not Symbiotic trading activity. The backend is source-auditable in `lib/preprod-observations.ts` and `lib/portfolio-analytics.ts`.
+
+
+## Stocks & RWA (Preprod-only)
+
+`/rwa` shows AAPL, NVDA and other real-world equity **reference symbols**,
+but **not actual listed-share tokens**. Testnet sUSD mint and a previous
+perpetual reference-script deposit have public receipts; no stock-linked trade
+is verified as complete. Users cannot yet trade or own real shares on this app.
+
+New optional read-only services:
+- `/api/rwa/readiness?ticker=AAPL` — public sUSD mint and Preprod tip proof.
+- `/api/rwa/oracle?ticker=AAPL` — Ed25519 multisource feed, returns 503 if
+  no independent licensed feeds are configured.
+- `/api/rwa/execution` — read-only explicit BLOCKED status; order POST
+  fails closed.
+- `/rwa` — CIP-30 read-only wallet UTxO preflight (Preprod server config required).
+
+Experimental bilateral stock-linked test contract **in its own Aiken package**:
+`rwa-contracts/`. This is neither deployed nor audited. Do not fund until
+recovery and trading controls have been independently reviewed. It does not
+alter any of the five pinned core validators.
+
+Ubuntu verification and requirements: `docs/rwa-preprod-readiness.md`.
