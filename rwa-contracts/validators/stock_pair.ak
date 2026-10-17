@@ -28,7 +28,7 @@ pub type StockPairAction {
 }
 
 fn payout(total:Int,long_margin:Int,size:Int,entry:Int,mark:Int)->Int {
- let marked_long=long_margin + size * (mark - entry) / entry
+ let marked_long=long_margin + size * (mark - entry) / 1000000
  if marked_long < 0 {0} else if marked_long > total {total} else {marked_long}
 }
 fn paid_to(outputs:List<Output>,recipient:Address,policy:PolicyId,asset:AssetName)->Int {
