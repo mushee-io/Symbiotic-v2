@@ -164,7 +164,8 @@ export default function TradePage() {
           {(Object.keys(navLabel) as View[]).map((item) => (
             <button key={item} className={view === item ? "is-active" : ""} onClick={() => setView(item)}>{navLabel[item]}</button>
           ))}
-          <a href="https://github.com/mushee-io/Symbiotic" target="_blank" rel="noreferrer">GITHUB</a>
+          <Link href="/rwa">RWA</Link>
+          <a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GITHUB</a>
         </nav>
         <div className="terminal-nav-actions">
           <span className="technical-badge"><i className="status-dot status-dot-live" />PREPROD</span>

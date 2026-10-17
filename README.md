@@ -191,3 +191,10 @@ CI additionally records TAP evidence, Next build fingerprints, CycloneDX SBOM, p
 The repository is now structurally finalized for **Cardano Preprod** through Milestone 100.
 
 It does **not** claim that the v0.15.0 validators are already deployed or that `testnetFinalized: true` has been produced from real public-chain receipts. To make that claim, the exact v0.15.0 validator generation must be parameterized and deployed to Preprod and the real 15-product-transaction rehearsal, five reference-script deployments, finality/indexer reconciliation and failure drills must be captured as V11 evidence.
+
+
+## Symbiotic V2: RWA test certificates (Preprod)
+
+The V2 fork adds a wallet-signed **native-asset RWA test certificate** workflow at `/rwa`, with local SHA-256 document hashing, explicit test-only on-chain metadata (label 721), Cardano Preprod UTxO preflight, onchain asset verification and non-custodial certificate transfer.
+
+Set `SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID` to a **Preprod** project ID in the server environment and fund a Preprod wallet with test ADA. See [RWA operator walkthrough](docs/rwa-preprod.md). Tokens are **not** legally backed RWA securities or proof of real-world title; contract/lifecycle readiness from the original README still requires independent chain evidence.

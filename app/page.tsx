@@ -15,7 +15,7 @@ const riskModules = [
 ] as const;
 
 const roadmap = [
-  { label: "NOW", items: ["BTC-USD PERPETUALS", "CARDANO PREPROD", "POSITION UTxOs", "LIVE ORACLE", "MARKET MAKER"] },
+  { label: "NOW", items: ["BTC-USD PERPETUALS", "RWA TEST CERTIFICATES", "CARDANO PREPROD", "POSITION UTxOs", "LIVE ORACLE", "MARKET MAKER"] },
   { label: "NEXT", items: ["MULTI-ASSET PERPS", "PORTFOLIO MARGIN", "ADVANCED ORDER TYPES", "LIQUIDITY ENGINE"] },
   { label: "LATER", items: ["OPTIONS SETTLEMENT", "PRIVATE NOTIONAL MARKETS", "INSTITUTIONAL APIs", "ADVANCED RISK"] },
 ] as const;
@@ -31,11 +31,12 @@ export default function HomePage() {
         </Link>
         <nav className={styles.nav}>
           <a href="#markets">MARKETS</a>
+          <Link href="/rwa">RWA</Link>
           <a href="#architecture">ARCHITECTURE</a>
           <a href="#risk">RISK</a>
           <a href="#liquidity">LIQUIDITY</a>
           <a href="#proof">PROOF</a>
-          <a href="https://github.com/mushee-io/Symbiotic" target="_blank" rel="noreferrer">GITHUB</a>
+          <a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GITHUB</a>
         </nav>
         <div className={styles.headerActions}>
           <span className={styles.network}><i />PREPROD</span>
@@ -86,6 +87,15 @@ export default function HomePage() {
         <div><span>ORACLE</span><LiveHomepageOracle compact /></div>
         <div><span>VALIDATOR</span><strong>{PREPROD_LIVE.perpetual.scriptHash.slice(0, 12)}…</strong></div>
         <div><span>SETTLEMENT</span><strong>CARDANO</strong></div>
+      </section>
+
+      <section className={styles.section} id="rwa">
+        <div className={styles.sectionIntro}>
+          <span className={styles.sectionNumber}>RWA</span>
+          <div><p>SYMBIOTIC V2 / REAL WORLD ASSETS</p><h2>TEST ASSETS.<br />VERIFIABLE RECORDS.</h2></div>
+        </div>
+        <p className={styles.heroText}>Create real Cardano Preprod native-asset test certificates, fingerprint supporting documents, transfer certificates and independently verify chain records. No real-world legal rights are conveyed.</p>
+        <div className={styles.heroActions}><Link className={styles.primary} href="/rwa">OPEN RWA LAB ↗</Link></div>
       </section>
 
       <section className={styles.section} id="markets">
@@ -202,9 +212,9 @@ export default function HomePage() {
       <footer className={styles.footer}>
         <div className={styles.footerBrand}><span>S</span><div><b>SYMBIOTIC</b><small>CARDANO DERIVATIVES INFRASTRUCTURE</small></div></div>
         <div className={styles.footerCols}>
-          <div><b>PROTOCOL</b><a href="#markets">Markets</a><a href="#risk">Risk</a><a href="#liquidity">Liquidity</a><a href="#architecture">Architecture</a></div>
-          <div><b>DEVELOPERS</b><a href="https://github.com/mushee-io/Symbiotic" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
-          <div><b>PRODUCT</b><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
+          <div><b>PROTOCOL</b><Link href="/rwa">RWA Lab</Link><a href="#markets">Markets</a><a href="#risk">Risk</a><a href="#liquidity">Liquidity</a><a href="#architecture">Architecture</a></div>
+          <div><b>DEVELOPERS</b><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic-v2#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
+          <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
         </div>
         <div className={styles.footerBottom}><span>SYMBIOTIC / CARDANO</span><span>NETWORK: PREPROD <i /></span></div>
       </footer>
