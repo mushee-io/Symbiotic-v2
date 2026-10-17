@@ -198,3 +198,12 @@ It does **not** claim that the v0.15.0 validators are already deployed or that `
 The V2 fork adds a wallet-signed **native-asset RWA test certificate** workflow at `/rwa`, with local SHA-256 document hashing, explicit test-only on-chain metadata (label 721), Cardano Preprod UTxO preflight, onchain asset verification and non-custodial certificate transfer.
 
 Set `SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID` to a **Preprod** project ID in the server environment and fund a Preprod wallet with test ADA. See [RWA operator walkthrough](docs/rwa-preprod.md). Tokens are **not** legally backed RWA securities or proof of real-world title; contract/lifecycle readiness from the original README still requires independent chain evidence.
+
+
+## V2 on-chain observation dashboards: Portfolio / Vault & Earn / Stats
+
+- `/portfolio`: CIP-30 Preprod wallet preflight (confirmed UTxOs on Preprod), independently indexed address native-asset and ADA balances, Cardano account staking rewards, and last 100 transactions' daily activity summary. Public addresses may be inspected without a wallet signature.
+- `/earn`: **read-only** observed balance of the existing perpetual collateral script and independently indexed **Cardano** staking rewards for the inspected address; disabled vault deposits/withdrawals. No invented APR, reward APY, locked vault tokens, or guaranteed returns. The collateral script is **not** an investable vault.
+- `/stats`: latest Cardano Preprod network block/epoch metrics, per-address transaction activity, and an explicitly local opt-in watchlist leaderboard of up to five public Preprod addresses, sorted by address transaction count. **Not** protocol-wide trading statistics, traders, revenue, ROI or TVL.
+
+The dashboards require a **server-side** `SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID` for the Preprod Blockfrost provider. Without it, requests fail closed rather than showing mock balance or returns. Caution: network-wide data is clearly marked as Cardano Preprod network data, not Symbiotic trading activity. The backend is source-auditable in `lib/preprod-observations.ts` and `lib/portfolio-analytics.ts`.

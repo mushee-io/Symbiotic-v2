@@ -165,6 +165,9 @@ export default function TradePage() {
             <button key={item} className={view === item ? "is-active" : ""} onClick={() => setView(item)}>{navLabel[item]}</button>
           ))}
           <Link href="/rwa">RWA</Link>
+          <Link href="/portfolio">PORTFOLIO</Link>
+          <Link href="/earn">VAULT &amp; EARN</Link>
+          <Link href="/stats">STATS</Link>
           <a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GITHUB</a>
         </nav>
         <div className="terminal-nav-actions">

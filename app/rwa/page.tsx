@@ -244,7 +244,7 @@ export default function RwaPage() {
     <main className={styles.root}>
       <header className={styles.header}>
         <Link href="/" className={styles.brand}><span>S</span><b>SYMBIOTIC</b><small>RWA LAB</small></Link>
-        <nav><Link href="/">OVERVIEW</Link><Link href="/trade">TRADE</Link><Link href="/rwa" className={styles.current}>RWA</Link><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">SOURCE ↗</a></nav>
+        <nav><Link href="/">OVERVIEW</Link><Link href="/trade">TRADE</Link><Link href="/rwa" className={styles.current}>RWA</Link><Link href="/portfolio">PORTFOLIO</Link><Link href="/earn">VAULT &amp; EARN</Link><Link href="/stats">STATS</Link><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">SOURCE ↗</a></nav>
         <span className={styles.net}>● CARDANO PREPROD</span>
       </header>
 

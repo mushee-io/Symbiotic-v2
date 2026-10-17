@@ -32,6 +32,9 @@ export default function HomePage() {
         <nav className={styles.nav}>
           <a href="#markets">MARKETS</a>
           <Link href="/rwa">RWA</Link>
+          <Link href="/portfolio">PORTFOLIO</Link>
+          <Link href="/earn">VAULT &amp; EARN</Link>
+          <Link href="/stats">STATS</Link>
           <a href="#architecture">ARCHITECTURE</a>
           <a href="#risk">RISK</a>
           <a href="#liquidity">LIQUIDITY</a>
@@ -96,6 +99,11 @@ export default function HomePage() {
         </div>
         <p className={styles.heroText}>Create real Cardano Preprod native-asset test certificates, fingerprint supporting documents, transfer certificates and independently verify chain records. No real-world legal rights are conveyed.</p>
         <div className={styles.heroActions}><Link className={styles.primary} href="/rwa">OPEN RWA LAB ↗</Link></div>
+        <div className={styles.heroActions}>
+          <Link className={styles.secondary} href="/portfolio">PORTFOLIO ↗</Link>
+          <Link className={styles.secondary} href="/earn">VAULT &amp; EARN ↗</Link>
+          <Link className={styles.secondary} href="/stats">ANALYTICS ↗</Link>
+        </div>
       </section>
 
       <section className={styles.section} id="markets">
@@ -214,7 +222,7 @@ export default function HomePage() {
         <div className={styles.footerCols}>
           <div><b>PROTOCOL</b><Link href="/rwa">RWA Lab</Link><a href="#markets">Markets</a><a href="#risk">Risk</a><a href="#liquidity">Liquidity</a><a href="#architecture">Architecture</a></div>
           <div><b>DEVELOPERS</b><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic-v2#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
-          <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
+          <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link><Link href="/stats">Stats</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
         </div>
         <div className={styles.footerBottom}><span>SYMBIOTIC / CARDANO</span><span>NETWORK: PREPROD <i /></span></div>
       </footer>
