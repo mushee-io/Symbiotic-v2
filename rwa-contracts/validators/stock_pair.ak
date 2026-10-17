@@ -23,7 +23,7 @@ pub type StockPairDatum {
   nonce: Int,
 }
 pub type StockPairAction {
-  Settle(mark_price_micros: Int, oracle_attested_at_ms: Int)
+  Settle(Int, Int)
   MutualRefund
 }
 
