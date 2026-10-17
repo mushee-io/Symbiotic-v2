@@ -29,5 +29,47 @@ export const RWA_MARKETS: RwaMarket[] = [
 ];
 
 export const RWA_MARKET_OPERATIONAL = false;
-export function easternParts(at:Date) { const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(at);const part=(name:string)=>parts.find(p=>p.type===name)?.value||"";return {weekday:part("weekday"),minuteOfDay:Number(part("hour"))*60+Number(part("minute")||0)}; }
-export function marketSession(at:Date) { const p=easternParts(at);const weekend=p.weekday==="Sat"||p.weekday==="Sun";const m=p.minuteOfDay;const session=weekend?"WEEKEND":m<240?"OVERNIGHT":m<570?"PRE-MARKET":m<960?"REGULAR":m<1200?"AFTER-HOURS":"OVERNIGHT";const candidate=new Date(at.getTime());candidate.setSeconds(0,0);candidate.setMinutes(candidate.getMinutes()<30?0:30);let next:null|Date=null;for(let i=1;i<=7*48;i++){candidate.setTime(candidate.getTime()+1800000);const t=easternParts(candidate);if(t.weekday!=="Sat"&&t.weekday!=="Sun"&&t.minuteOfDay===570){next=new Date(candidate);break;}}return {session,weekend,regularOpen:!weekend&&m>=570&&m<960,nextRegularOpen:next?.toISOString()||null,timezone:"America/New_York" as const,warning:"Illustrative US Eastern session clock only. Holidays and asset calendars are not configured; no RWA market is executable."}; }
+// NYSE published 2026–2028 holidays and early closes. Fail closed in other years.
+const HOLIDAYS: Record<string,string> = {
+ "2026-01-01":"New Year's Day","2026-01-19":"Martin Luther King Jr. Day","2026-02-16":"Washington's Birthday","2026-04-03":"Good Friday",
+ "2026-05-25":"Memorial Day","2026-06-19":"Juneteenth","2026-07-03":"Independence Day observed","2026-09-07":"Labor Day",
+ "2026-11-26":"Thanksgiving","2026-12-25":"Christmas",
+ "2027-01-01":"New Year's Day","2027-01-18":"Martin Luther King Jr. Day","2027-02-15":"Washington's Birthday","2027-03-26":"Good Friday",
+ "2027-05-31":"Memorial Day","2027-06-18":"Juneteenth observed","2027-07-05":"Independence Day observed","2027-09-06":"Labor Day",
+ "2027-11-25":"Thanksgiving","2027-12-24":"Christmas observed",
+ "2028-01-17":"Martin Luther King Jr. Day","2028-02-21":"Washington's Birthday","2028-04-14":"Good Friday","2028-05-29":"Memorial Day",
+ "2028-06-19":"Juneteenth","2028-07-04":"Independence Day","2028-09-04":"Labor Day","2028-11-23":"Thanksgiving","2028-12-25":"Christmas"
+};
+const EARLY_CLOSE: Record<string,number> = {"2026-11-27":780,"2026-12-24":780,"2027-11-26":780,"2028-07-03":780,"2028-11-24":780};
+const formatter=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"});
+function parts(at:Date){
+ const p=formatter.formatToParts(at);const get=(key:string)=>p.find(x=>x.type===key)?.value||"";
+ return {date:get("year")+"-"+get("month")+"-"+get("day"),weekday:get("weekday"),minuteOfDay:Number(get("hour"))*60+Number(get("minute"))};
+}
+export function easternParts(at:Date){const p=parts(at);return {weekday:p.weekday,minuteOfDay:p.minuteOfDay};}
+export function marketSession(at:Date){
+ const current=parts(at),date=current.date,m=current.minuteOfDay;
+ const calendarVerified=/^202[678]-/.test(date);
+ const weekend=current.weekday==="Sat"||current.weekday==="Sun";
+ const holiday=calendarVerified?HOLIDAYS[date]||null:null;
+ const earlyCloseMinutes=calendarVerified?EARLY_CLOSE[date]||null:null;
+ const close=earlyCloseMinutes||960;
+ const regularOpen=calendarVerified&&!weekend&&!holiday&&m>=570&&m<close;
+ const session=!calendarVerified?"CALENDAR_UNVERIFIED":weekend?"WEEKEND":holiday?"HOLIDAY":
+  m<240?"OVERNIGHT":m<570?"PRE-MARKET":m<close?"REGULAR":
+  earlyCloseMinutes?"EARLY_CLOSED":m<1200?"AFTER-HOURS":"OVERNIGHT";
+ let nextRegularOpen:string|null=null;
+ if(calendarVerified){
+  const cursor=new Date(at.getTime());
+  cursor.setUTCSeconds(0,0);cursor.setUTCMinutes(cursor.getUTCMinutes()-(cursor.getUTCMinutes()%30));
+  for(let i=0;i<14*48;i++){
+   if(cursor.getTime()>at.getTime()){
+    const candidate=parts(cursor);
+    if(/^202[678]-/.test(candidate.date)&&!HOLIDAYS[candidate.date]&&candidate.weekday!=="Sat"&&candidate.weekday!=="Sun"&&candidate.minuteOfDay===570){nextRegularOpen=cursor.toISOString();break;}
+   }
+   cursor.setTime(cursor.getTime()+1800000);
+  }
+ }
+ return {session,weekend,regularOpen,nextRegularOpen,timezone:"America/New_York" as const,date,holiday,earlyCloseMinutes,calendarVerified,
+ warning:"NYSE regular-session reference only. Instrument-specific halts and calendar updates need verification; no RWA market is executable."};
+}
