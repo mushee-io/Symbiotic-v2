@@ -1,0 +1,10 @@
+export type RwaMarket = { id:string; label:string; category:"PROPERTY"|"INVOICE"|"COMMODITY"|"FUND"; description:string; unit:string|null; timezone:"America/New_York"; venue:"preprod"; };
+export const RWA_MARKETS: RwaMarket[] = [
+{id:"invoice",label:"INVOICE / TEST",category:"INVOICE",description:"Invoice certificate — not a backed security",unit:null,timezone:"America/New_York",venue:"preprod"},
+{id:"property",label:"PROPERTY / TEST",category:"PROPERTY",description:"Property certificate — no legal title",unit:null,timezone:"America/New_York",venue:"preprod"},
+{id:"commodity",label:"COMMODITY / TEST",category:"COMMODITY",description:"Commodity certificate — no physical backing",unit:null,timezone:"America/New_York",venue:"preprod"},
+{id:"fund",label:"FUND / TEST",category:"FUND",description:"Fund certificate — not an investment",unit:null,timezone:"America/New_York",venue:"preprod"}
+];
+export const RWA_MARKET_OPERATIONAL = false;
+export function easternParts(at:Date) { const parts=new Intl.DateTimeFormat("en-US",{timeZone:"America/New_York",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(at);const part=(name:string)=>parts.find(p=>p.type===name)?.value||"";return {weekday:part("weekday"),minuteOfDay:Number(part("hour"))*60+Number(part("minute")||0)}; }
+export function marketSession(at:Date) { const p=easternParts(at);const weekend=p.weekday==="Sat"||p.weekday==="Sun";const m=p.minuteOfDay;const session=weekend?"WEEKEND":m<240?"OVERNIGHT":m<570?"PRE-MARKET":m<960?"REGULAR":m<1200?"AFTER-HOURS":"OVERNIGHT";const candidate=new Date(at.getTime());candidate.setSeconds(0,0);let next:null|Date=null;for(let i=1;i<=7*24*60;i++){candidate.setTime(candidate.getTime()+60000);const t=easternParts(candidate);if(t.weekday!=="Sat"&&t.weekday!=="Sun"&&t.minuteOfDay===570){next=new Date(candidate);break;}}return {session,weekend,regularOpen:!weekend&&m>=570&&m<960,nextRegularOpen:next?.toISOString()||null,timezone:"America/New_York" as const,warning:"Illustrative US Eastern session clock only. Holidays and asset calendars are not configured; no RWA market is executable."}; }
