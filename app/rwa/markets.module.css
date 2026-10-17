@@ -10,3 +10,14 @@
 .liveReferenceChart{height:430px;background:#081711}
 .referenceDisclosure{padding:13px 24px;border-bottom:1px solid #2a4033;font:10px/1.6 var(--mono);color:#9db3a3}
 @media(max-width:620px){.liveReferenceChart{height:350px}.companyName{font-size:11px}.tickerName{font-size:13px}}
+
+.proofPanel{border-block:1px solid #3c553e;background:#102017;padding:20px 24px;display:flex;flex-direction:column;gap:15px}
+.proofHeader{display:flex;justify-content:space-between;gap:12px;font:11px var(--mono);flex-wrap:wrap;letter-spacing:.04em}
+.proofGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.proofGrid>div{border:1px solid #34513a;background:#102a1d;padding:13px;display:flex;flex-direction:column;gap:10px}
+.proofGrid small{font:9px/1.4 var(--mono);color:#87a48f}
+.proofGrid b{font:10px/1.5 var(--mono);color:#c9ff3d}
+.proofPanel p{font:10px/1.7 var(--mono);color:#aabb9e;margin:0}
+.proofPanel a{font:10px var(--mono);color:#c9ff3d;text-decoration:none}
+@media(max-width:1100px){.proofGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.proofGrid{grid-template-columns:1fr 1fr}.proofPanel{padding:14px}}
