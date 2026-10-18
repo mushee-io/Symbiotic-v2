@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import {PreprodProtocolActivity} from "@/components/PreprodProtocolActivity";
 import { BrowserWallet, type UTxO } from "@meshsdk/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -356,6 +357,7 @@ export function PreprodCommandCenter({ view }: { view: View }) {
     </> : null}
 
     {view === "stats" ? <>
+      <PreprodProtocolActivity />
       <div className={styles.metrics}>
         <Metric label="PREPROD BLOCK HEIGHT" value={network ? compact(network.latestBlock.height) : "—"} subtitle="LATEST INDEXED BLOCK" />
         <Metric label="CURRENT EPOCH" value={network ? compact(network.epoch.number) : "—"} subtitle="CARDANO PREPROD NETWORK" />
