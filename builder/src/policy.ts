@@ -1,5 +1,7 @@
 import {createHash,randomUUID,timingSafeEqual} from "node:crypto";
 export const SELF_TEST_LOVELACE=2_000_000n;
+export const SELF_TEST_SIGNING_WINDOW_MS=15*60*1000;
+export const SELF_TEST_CHAIN_TTL_SLOTS=30*60;
 const ADDRESS=/^addr_test1[a-z0-9]{35,120}$/;
 const HEX64=/^[0-9a-f]{64}$/i;
 export type BuilderRequest={

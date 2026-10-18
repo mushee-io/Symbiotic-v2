@@ -1,6 +1,7 @@
 import {createServer,type IncomingMessage,type ServerResponse} from "node:http";
 import {PreprodBuilder} from "./builder.js";
 import {configured,safeEqual} from "./policy.js";
+import {publicBuilderError} from "./assembly-errors.js";
 
 const config=configured();
 const builder=new PreprodBuilder(config.key);
@@ -41,7 +42,7 @@ const server=createServer(async(req,res)=>{
  }catch(error){
   const message=error instanceof Error?error.message:"Builder request failed";
   console.error("Builder rejected request:",message.replace(/preprod[a-z0-9]{15,}/gi,"[BLOCKFROST_KEY]"));
-  return response(res,400,{error:"Builder request rejected; check local operator logs"});
+  return response(res,400,publicBuilderError(req.url,error));
  }
 });
 server.requestTimeout=15000;

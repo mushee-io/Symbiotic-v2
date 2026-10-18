@@ -7,16 +7,7 @@ import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const actions = new Set<BuilderAction>([
-  "WALLET_SELF_TEST",
-  "DEPOSIT_COLLATERAL",
-  "WITHDRAW_COLLATERAL",
-  "OPEN_PERP",
-  "CLOSE_PERP",
-  "SETTLE_OPTION",
-  "LIQUIDATE",
-  "SETTLE_NOTIONAL"
-]);
+const actions = new Set<BuilderAction>(["WALLET_SELF_TEST"]);
 const networks = new Set<CardanoNetwork>(["preprod"]);
 
 export async function POST(request: Request) {

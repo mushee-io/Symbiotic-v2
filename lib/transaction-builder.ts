@@ -86,7 +86,20 @@ export class TransactionBuilderClient {
       redirect: "error",
       signal: AbortSignal.timeout(12000)
     });
-    if (!response.ok) throw new Error(`Transaction builder assemble failed with ${response.status}`);
+    if (!response.ok) {
+      const rejected:unknown=await response.json().catch(()=>null);
+      const code=rejected&&typeof rejected==="object"&&"code" in rejected
+        ?(rejected as {code:unknown}).code:null;
+      const known:Record<string,string>={
+        SIGNING_SESSION_EXPIRED:"The Lace signing session expired or was already used. Start a new self-test.",
+        SIGNATURE_REQUIRED:"Lace did not supply the required payment signature.",
+        WITNESS_INVALID:"Lace supplied a witness set that this ADA-only test cannot accept.",
+        TRANSACTION_MISMATCH:"The signed transaction differs from the prepared transaction.",
+        ASSEMBLY_INVALID:"Builder could not assemble the signature. Check Ubuntu builder logs."
+      };
+      throw new Error(typeof code==="string"&&Object.hasOwn(known,code)
+        ?known[code]:`Transaction builder assemble failed with ${response.status}. Check the Ubuntu builder log.`);
+    }
     const body = await response.json() as { signedTxCborHex?: string };
     if (!body.signedTxCborHex || body.signedTxCborHex.length % 2 !== 0 || !/^[0-9a-f]+$/i.test(body.signedTxCborHex)) {
       throw new Error("Builder returned invalid signed transaction CBOR");

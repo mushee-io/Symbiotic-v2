@@ -1,6 +1,6 @@
 import {BlockfrostProvider,MeshTxBuilder,resolveSlotNo,type UTxO} from "@meshsdk/core";
 import {Serialization} from "@meshsdk/core-cst";
-import {SELF_TEST_LOVELACE,Sessions,validateSelfTest,type BuilderRequest} from "./policy.js";
+import {SELF_TEST_LOVELACE,SELF_TEST_SIGNING_WINDOW_MS,SELF_TEST_CHAIN_TTL_SLOTS,Sessions,validateSelfTest,type BuilderRequest} from "./policy.js";
 
 type HexCbor=Parameters<typeof Serialization.Transaction.fromCbor>[0];
 const hex=(s:unknown)=>typeof s==="string"&&s.length>0&&s.length%2===0&&s.length<=300000&&/^[0-9a-f]+$/i.test(s);
@@ -32,7 +32,7 @@ export class PreprodBuilder {
   const unsignedTxCborHex=await new MeshTxBuilder({fetcher:this.provider})
    .txOut(req.account,[{unit:"lovelace",quantity:SELF_TEST_LOVELACE.toString()}])
    .invalidBefore(slot)
-   .invalidHereafter(slot+100)
+   .invalidHereafter(slot+SELF_TEST_CHAIN_TTL_SLOTS)
    .changeAddress(req.account)
    .selectUtxosFrom(adaOnly)
    .complete();
@@ -51,7 +51,7 @@ export class PreprodBuilder {
   if(fee<=0n||fee>1500000n)throw Error("Transaction fee outside fixed 1.5 ADA cap");
   const txBodyHash=String(tx.getId());
   if(!/^[0-9a-f]{64}$/i.test(txBodyHash))throw Error("Missing Cardano transaction body hash");
-  const createdAt=new Date(now).toISOString(),expiresAtMs=now+90000;
+  const createdAt=new Date(now).toISOString(),expiresAtMs=now+SELF_TEST_SIGNING_WINDOW_MS;
   const requestId=this.sessions.store({unsignedTxCborHex,txBodyHash,expiresAt:expiresAtMs,consumed:false},now);
   return {
    requestId,network:"preprod",unsignedTxCborHex,createdAt,

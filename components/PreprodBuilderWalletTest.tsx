@@ -62,7 +62,7 @@ export function PreprodBuilderWalletTest(){
     prepared.summary.outputs.some(o=>o.address!==account)||
     BigInt(prepared.summary.feeLovelace)>1_500_000n)
     throw Error("Builder transaction summary failed wallet safety checks");
-   setPhase("Please review the wallet popup: all outputs must return to your wallet. Only network fees should be spent.");
+   setPhase("Review the Lace popup carefully. All outputs must return to your wallet. Signing may take several minutes; there is a 15-minute window.");
    const witnessSetCborHex=await wallet.signTx(prepared.unsignedTxCborHex,true);
    setPhase("Assembling signed Preprod transaction...");
    const assemble=await fetch("/api/cardano/assemble",{method:"POST",headers:{"content-type":"application/json"},
