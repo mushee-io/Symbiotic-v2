@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {validatedBuilderReadiness,type BuilderReady} from "@/lib/preprod-builder-health";
+import {cloudflareBuilderAccess} from "@/lib/cloudflare-builder-access";
 import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -16,7 +17,7 @@ export async function GET(){
   if(parsed.protocol!=="https:"||parsed.username||parsed.password||parsed.hash)
    throw Error("Builder endpoint must be authenticated HTTPS");
   const res=await fetch(parsed.href.replace(/\/$/,"")+"/ready",{
-   headers:{Authorization:"Bearer "+token},redirect:"error",cache:"no-store",
+   headers:{Authorization:"Bearer "+token,...cloudflareBuilderAccess(process.env)},redirect:"error",cache:"no-store",
    signal:AbortSignal.timeout(9000)});
   if(!res.ok)throw Error("Builder not ready");
   const payload=await res.json() as BuilderReady;

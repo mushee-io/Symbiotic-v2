@@ -22,9 +22,9 @@ export type BuilderRequest = {
 };
 
 export class TransactionBuilderClient {
-  constructor(private readonly endpoint: string, private readonly bearerToken?: string) {
+  constructor(private readonly endpoint: string, private readonly bearerToken?: string, private readonly accessHeaders: Record<string, string> = {}) {
     const url = new URL(endpoint);
-    if(url.username || url.password || url.hash)throw new Error("Invalid transaction-builder endpoint credentials or fragment");
+    if(url.username || url.password || url.hash || url.search)throw new Error("Invalid transaction-builder endpoint credentials or fragment");
     if (url.protocol !== "https:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
       throw new Error("Transaction builder endpoint must use HTTPS");
     }
@@ -33,7 +33,8 @@ export class TransactionBuilderClient {
   private headers() {
     return {
       "content-type": "application/json",
-      ...(this.bearerToken ? { authorization: `Bearer ${this.bearerToken}` } : {})
+      ...(this.bearerToken ? { authorization: `Bearer ${this.bearerToken}` } : {}),
+      ...this.accessHeaders
     };
   }
 
@@ -81,7 +82,9 @@ export class TransactionBuilderClient {
       method: "POST",
       headers: this.headers(),
       body: JSON.stringify(input),
-      cache: "no-store"
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(12000)
     });
     if (!response.ok) throw new Error(`Transaction builder assemble failed with ${response.status}`);
     const body = await response.json() as { signedTxCborHex?: string };

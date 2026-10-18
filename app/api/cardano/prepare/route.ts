@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { TransactionBuilderClient, type BuilderAction } from "@/lib/transaction-builder";
 import type { CardanoNetwork } from "@/lib/cardano-execution";
+import {cloudflareBuilderAccess} from "@/lib/cloudflare-builder-access";
 import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 
 export const runtime = "nodejs";
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
     try { assertPreprodBuilderRequest(process.env, network); }
     catch (error) { return NextResponse.json({error:error instanceof Error?error.message:"Preprod network required"}, {status:409}); }
 
-    const client = new TransactionBuilderClient(endpoint, process.env.SYMBIOTIC_TX_BUILDER_TOKEN);
+    const client = new TransactionBuilderClient(endpoint, process.env.SYMBIOTIC_TX_BUILDER_TOKEN, cloudflareBuilderAccess(process.env));
     const prepared = await client.prepare({
       action,
       network,

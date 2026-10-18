@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { TransactionBuilderClient } from "@/lib/transaction-builder";
+import {cloudflareBuilderAccess} from "@/lib/cloudflare-builder-access";
 import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 
 export const runtime = "nodejs";
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Transaction and witness set must be CBOR hex" }, { status: 400 });
     }
 
-    const client = new TransactionBuilderClient(endpoint, process.env.SYMBIOTIC_TX_BUILDER_TOKEN);
+    const client = new TransactionBuilderClient(endpoint, process.env.SYMBIOTIC_TX_BUILDER_TOKEN, cloudflareBuilderAccess(process.env));
     const signedTxCborHex = await client.assemble({
       requestId,
       unsignedTxCborHex: body.unsignedTxCborHex as string,
