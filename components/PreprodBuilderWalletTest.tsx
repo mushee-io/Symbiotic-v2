@@ -1,12 +1,10 @@
 "use client";
-import {BrowserWallet,type UTxO} from "@meshsdk/core";
+import {BrowserWallet} from "@meshsdk/core";
+import {selectPreprodSelfTestUtxo} from "@/lib/preprod-self-test-utxo";
 import {useEffect,useState} from "react";
 type Prepared={network:string;requestId:string;intentHash:string;unsignedTxCborHex:string;
  summary:{action:string;account:string;feeLovelace:string;scriptHashes:string[];
  outputs:Array<{address:string;lovelace:string}>;changeAddress:string}};
-function refs(utxos:UTxO[]){
- return utxos.slice(0,3).map(u=>u.input.txHash+"#"+u.input.outputIndex);
-}
 async function hashIntent(address:string){
  const preimage="symbiotic-builder-v1|preprod|WALLET_SELF_TEST|"+address+"|2000000";
  const digest=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(preimage));
@@ -39,23 +37,29 @@ export function PreprodBuilderWalletTest(){
    if(!/^addr_test1[a-z0-9]{35,120}$/.test(change))throw Error("Expected Preprod wallet address");
    const utxos=await wallet.getUtxos();
    if(!utxos?.length)throw Error("No spendable UTxOs found");
-   setPhase("Verifying wallet UTxOs independently on Preprod...");
+   // CIP-30 change addresses can differ from the funded receiving address.
+   // Use an ADA-only output actually provided by the connected wallet, then
+   // independently check that output on the Preprod blockchain.
+   const candidate=selectPreprodSelfTestUtxo(utxos);
+   if(!candidate)throw Error("No ADA-only wallet UTxO of at least 5 tADA found. Your wallet balance may be split across smaller outputs or outputs containing other tokens.");
+   const account=candidate.output.address;
+   setPhase("Verifying selected wallet UTxO independently on Preprod...");
    const proof=await fetch("/api/rwa/preflight",{method:"POST",headers:{"content-type":"application/json"},
-    body:JSON.stringify({utxoRefs:refs(utxos)}),cache:"no-store"});
+    body:JSON.stringify({utxoRefs:[candidate.input.txHash+"#"+candidate.input.outputIndex]}),cache:"no-store"});
    const evidence=await proof.json() as {verified?:boolean;error?:string};
    if(!proof.ok||!evidence.verified)throw Error(evidence.error||"Cannot prove this wallet has a Preprod UTxO");
    setPhase("Preparing wallet-return transaction...");
-   const intentHash=await hashIntent(change);
+   const intentHash=await hashIntent(account);
    const res=await fetch("/api/cardano/prepare",{method:"POST",headers:{"content-type":"application/json"},
-    body:JSON.stringify({action:"WALLET_SELF_TEST",network:"preprod",account:change,payload:{},intentHash}),cache:"no-store"});
+    body:JSON.stringify({action:"WALLET_SELF_TEST",network:"preprod",account,payload:{},intentHash}),cache:"no-store"});
    const prepared=await res.json() as Prepared&{error?:string};
    if(!res.ok)throw Error(prepared.error||"Builder preparation failed");
    if(prepared.network!=="preprod"||prepared.intentHash!==intentHash||
-    prepared.summary?.action!=="WALLET_SELF_TEST"||prepared.summary?.account!==change||
-    prepared.summary?.changeAddress!==change||
+    prepared.summary?.action!=="WALLET_SELF_TEST"||prepared.summary?.account!==account||
+    prepared.summary?.changeAddress!==account||
     prepared.summary?.scriptHashes.length!==0||
     !prepared.summary.outputs?.length||
-    prepared.summary.outputs.some(o=>o.address!==change)||
+    prepared.summary.outputs.some(o=>o.address!==account)||
     BigInt(prepared.summary.feeLovelace)>1_500_000n)
     throw Error("Builder transaction summary failed wallet safety checks");
    setPhase("Please review the wallet popup: all outputs must return to your wallet. Only network fees should be spent.");
@@ -68,7 +72,7 @@ export function PreprodBuilderWalletTest(){
    setPhase("Submitting to Cardano Preprod through your wallet...");
    const hash=await wallet.submitTx(result.signedTxCborHex);
    if(!/^[a-f0-9]{64}$/i.test(hash))throw Error("Wallet returned an invalid transaction hash");
-   setTransaction(hash.toLowerCase());setAddress(change);
+   setTransaction(hash.toLowerCase());setAddress(account);
    setPhase("Submitted. Confirm transaction on Preprod before marking this step complete.");
   }catch(error){setPhase(error instanceof Error?error.message:"Wallet transaction rejected");}
   finally{setBusy(false);}
