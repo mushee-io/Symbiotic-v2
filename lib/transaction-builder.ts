@@ -2,6 +2,7 @@ import { validatePreparedTransaction, type CardanoNetwork, type PreparedCardanoT
 import { validateTransactionFirewall, type HardenedPreparedTransaction, type TransactionFirewallPolicy } from "./transaction-firewall";
 
 export type BuilderAction =
+  | "WALLET_SELF_TEST"
   | "DEPLOY_REFERENCE_SCRIPT"
   | "DEPOSIT_COLLATERAL"
   | "WITHDRAW_COLLATERAL"

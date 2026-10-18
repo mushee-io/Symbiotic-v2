@@ -7,6 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const actions = new Set<BuilderAction>([
+  "WALLET_SELF_TEST",
   "DEPOSIT_COLLATERAL",
   "WITHDRAW_COLLATERAL",
   "OPEN_PERP",
