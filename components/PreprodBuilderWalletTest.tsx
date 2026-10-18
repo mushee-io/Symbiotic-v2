@@ -95,7 +95,7 @@ export function PreprodBuilderWalletTest(){
    {wallets.length?wallets.map(name=><option key={name} value={name}>{name}</option>):<option value="">No installed CIP-30 wallets</option>}
   </select>
   <button type="button" disabled={!ready||!selected||busy} onClick={()=>void send()}
-   style={{padding:14,border:"1px solid #84a95a",color:"#dafa9e",background:"#253922",opacity:!ready||busy?.5:1,cursor:ready?"pointer":"not-allowed"}}>
+   style={{padding:14,border:"1px solid #84a95a",color:"#dafa9e",background:"#253922",opacity:(!ready||busy)?0.5:1,cursor:ready?"pointer":"not-allowed"}}>
    {busy?"WORKING…":"RUN 2 tADA WALLET SELF-TEST"}
   </button>
   <p aria-live="polite" style={{fontSize:12,color:confirmed?"#c9ff3d":"#e0bc9d",lineHeight:1.7}}>{phase}</p>

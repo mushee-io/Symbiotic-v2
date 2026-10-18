@@ -29,6 +29,7 @@ export async function POST(request: Request) {
     const account = typeof body.account === "string" ? body.account : "";
     const intentHash = typeof body.intentHash === "string" ? body.intentHash : "";
     if (!actions.has(action)) return NextResponse.json({ error: "Unsupported builder action" }, { status: 400 });
+    if (action === "WALLET_SELF_TEST" && process.env.SYMBIOTIC_WALLET_SELF_TEST_ENABLED !== "true") return NextResponse.json({ error: "Wallet self-test not enabled for this deployment" }, { status: 503 });
     if (!networks.has(network)) return NextResponse.json({ error: "Unsupported Cardano network" }, { status: 400 });
 
     try { assertPreprodBuilderRequest(process.env, network); }

@@ -7,7 +7,7 @@ export async function GET(){
  const endpoint=process.env.SYMBIOTIC_TX_BUILDER_ENDPOINT;
  const token=process.env.SYMBIOTIC_TX_BUILDER_TOKEN;
  const headers={"Cache-Control":"no-store"};
- if(!endpoint||!token)return NextResponse.json({network:"preprod",ready:false,
+ if(!endpoint||!token||process.env.SYMBIOTIC_WALLET_SELF_TEST_ENABLED!=="true")return NextResponse.json({network:"preprod",ready:false,
   status:"NOT_CONFIGURED",supportedActions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false},
   {status:503,headers});
  try{
