@@ -38,7 +38,7 @@ Official exchange calendar: https://www.nyse.com/trade/hours-calendars
   compiled on a separate GitHub workflow. Contains bilateral test sUSD payout
   conservation, matched long/short payoff caps, dual-oracle + keeper settlement
   signature requirement and a consent-based mutual refund path. Not deployed and
-  not audited. No single-party timeout recovery yet; nobody should deposit funds
+  not independently audited. A time-locked exit path has been added, but has not been tested with live transaction receipts
   until exit safety has been reviewed.
 - `scripts/rwa-preprod-audit.mjs`: independent read-only Koios cross-check for
   tip, canonical sUSD mint, and a local five-reference-validator deployment manifest.
