@@ -1,22 +1,18 @@
-import {BlockfrostProvider,MeshTxBuilder,resolveSlotNo,type UTxO} from "@meshsdk/core";
+import {BlockfrostProvider,MeshTxBuilder,type UTxO} from "@meshsdk/core";
 import {Serialization} from "@meshsdk/core-cst";
-import {SELF_TEST_LOVELACE,SELF_TEST_SIGNING_WINDOW_MS,SELF_TEST_CHAIN_TTL_SLOTS,Sessions,validateSelfTest,type BuilderRequest} from "./policy.js";
+import {fetchPreprodChainTip,preprodValidityWindow} from "./preprod-chain-tip.js";
+import {SELF_TEST_LOVELACE,SELF_TEST_SIGNING_WINDOW_MS,Sessions,validateSelfTest,type BuilderRequest} from "./policy.js";
 
 type HexCbor=Parameters<typeof Serialization.Transaction.fromCbor>[0];
 const hex=(s:unknown)=>typeof s==="string"&&s.length>0&&s.length%2===0&&s.length<=300000&&/^[0-9a-f]+$/i.test(s);
 export class PreprodBuilder {
  readonly sessions=new Sessions();
  readonly provider:BlockfrostProvider;
- constructor(projectId:string,provider?:BlockfrostProvider){this.provider=provider??new BlockfrostProvider(projectId);}
+ constructor(readonly projectId:string,provider?:BlockfrostProvider){this.provider=provider??new BlockfrostProvider(projectId);}
  status(){return {service:"symbiotic-preprod-builder",network:"preprod",networkMagic:1,actions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false,signingKeysStored:false};}
  async ready(projectId:string){
-  const r=await fetch("https://cardano-preprod.blockfrost.io/api/v0/blocks/latest",{
-   headers:{project_id:projectId},redirect:"error",cache:"no-store",signal:AbortSignal.timeout(10000)});
-  if(!r.ok)throw Error("Preprod Blockfrost unavailable");
-  const tip=await r.json() as {time?:number;slot?:number};
-  if(!Number.isSafeInteger(tip.time)||!Number.isSafeInteger(tip.slot)||Math.abs(Date.now()/1000-(tip.time??0))>600)
-   throw Error("Preprod tip missing or stale");
-  return {...this.status(),ready:true,tipTime:new Date((tip.time??0)*1000).toISOString()};
+  const tip=await fetchPreprodChainTip(projectId);
+  return {...this.status(),ready:true,tipTime:new Date(tip.time*1000).toISOString()};
  }
  async prepare(input:BuilderRequest,now=Date.now()){
   const req=validateSelfTest(input);
@@ -27,12 +23,14 @@ export class PreprodBuilder {
    /^[0-9]+$/.test(u.output.amount[0].quantity)&&
    BigInt(u.output.amount[0].quantity)>=5_000_000n);
   if(!adaOnly.length)throw Error("A Preprod ADA-only wallet UTxO of 5+ tADA is required");
-  const slot=Number(resolveSlotNo("preprod",now));
-  if(!Number.isSafeInteger(slot)||slot<=0)throw Error("Preprod slot unavailable");
+  // Never derive invalidBefore from a local wall clock. On Cardano Preprod,
+  // the local machine may lead the submission node by many slots.
+  const tip=await fetchPreprodChainTip(this.projectId,now);
+  const {invalidBefore,invalidHereafter}=preprodValidityWindow(tip,now);
   const unsignedTxCborHex=await new MeshTxBuilder({fetcher:this.provider})
    .txOut(req.account,[{unit:"lovelace",quantity:SELF_TEST_LOVELACE.toString()}])
-   .invalidBefore(slot)
-   .invalidHereafter(slot+SELF_TEST_CHAIN_TTL_SLOTS)
+   .invalidBefore(invalidBefore)
+   .invalidHereafter(invalidHereafter)
    .changeAddress(req.account)
    .selectUtxosFrom(adaOnly)
    .complete();
