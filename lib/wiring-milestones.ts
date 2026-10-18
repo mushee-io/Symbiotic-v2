@@ -18,7 +18,7 @@ export const WIRING_MODULES:readonly WiringModule[]=[
  {id:"equity-oracle",name:"Stock execution oracle",priority:"P0",codeState:"partial",live:false,
   blockers:["Licensed equity price feeds","Independent Ed25519 sources","Bounded on-chain oracle attestation"],evidenceRequired:"Signed production-like Preprod rounds with stale, halt, divergence and holiday recovery tests"},
  {id:"rwa-contract",name:"RWA smart contracts",priority:"P0",codeState:"prototype",live:false,
-  blockers:["Audit stock-pair escrow","Unilateral expiry/recovery path","On-chain oracle-round state","Funded script deployment"],evidenceRequired:"Standalone contract hash and unspent reference UTxO plus balanced Preprod spending receipts"},
+  blockers:["Audit stock-pair escrow","Verify time-locked refund behavior on public Preprod","On-chain oracle-round state","Funded script deployment"],evidenceRequired:"Standalone contract hash and unspent reference UTxO plus balanced Preprod spending receipts"},
  {id:"rwa-orderbook",name:"RWA order book",priority:"P0",codeState:"prototype",live:false,
   blockers:["Persistent authenticated intents","Replay protection and cancellation","Escrow settlement and independent chain indexer"],evidenceRequired:"Two-wallet limit order, partial fill, cancel and settlement transaction hashes"},
  {id:"rwa-issuance",name:"RWA mint and verify",priority:"P0",codeState:"partial",live:false,
