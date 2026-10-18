@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {parseBtcReferenceRound,type BtcReferenceRound} from "@/lib/btc-reference-round";
 import { WalletButton } from "@/components/WalletButton";
 import { LivePerpLauncher } from "@/components/LivePerpLauncher";
+import { PreprodLockedLedger } from "@/components/PreprodLockedLedger";
 import {
   calculateFundingPayment,
   calculateFundingRate,
@@ -314,6 +315,7 @@ export default function TradePage() {
             </aside>
           </section>
 
+          <PreprodLockedLedger />
           <section className="terminal-ledger">
             <div className="ledger-tabs">
               <button className="is-active">POSITIONS</button><button>OPEN ORDERS</button><button>ORDER HISTORY</button><button>TRADES</button><button>FUNDING</button><button>TRANSACTIONS</button>
