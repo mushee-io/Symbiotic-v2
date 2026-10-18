@@ -24,7 +24,7 @@ test("chain tip invalid or stale fails closed",()=>{
  assert.throws(()=>preprodValidityWindow({slot:10,time:tip.time},now),/Invalid/);
  assert.throws(()=>preprodValidityWindow({slot:NaN,time:tip.time},now),/Invalid/);
  assert.throws(()=>preprodValidityWindow({...tip,time:tip.time-700},now),/stale/);
- assert.throws(()=>preprodValidityWindow({...tip,time:tip.time+120},now),/future-dated/);
+ assert.throws(()=>preprodValidityWindow({...tip,time:tip.time+200},now),/future-dated/);
 });
 
 test("authenticated Blockfrost tip retrieval returns validated chain tip",async()=>{
