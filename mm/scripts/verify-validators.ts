@@ -1,4 +1,5 @@
 import "dotenv/config";
+import {BlockfrostProvider} from "@meshsdk/core";
 import {readFileSync} from "node:fs";
 import {resolve} from "node:path";
 import {verifyReferenceScriptReceipt} from "../src/reference-script-proof.js";
@@ -17,7 +18,12 @@ if(manifest.status!=="complete"||manifest.network!=="preprod"||
  throw Error("Five-validator Preprod deployment evidence is absent or incomplete");
 const refs=new Set<string>();
 const proofs=[];
+const provider=new BlockfrostProvider(projectId);
+const live=await provider.fetchAddressUTxOs(manifest.mmAddress);
+const unspent=new Set(live.map(x=>x.input.txHash+"#"+x.input.outputIndex));
 for(const r of manifest.validators){
+ if(!unspent.has(r.referenceUtxo))
+  throw Error("Recorded reference-script UTxO is not unspent at the expected address");
  if(r.referenceUtxo!==r.txHash+"#"+r.outputIndex||refs.has(r.referenceUtxo))
   throw Error("Duplicate or internally inconsistent reference-script UTxO");
  refs.add(r.referenceUtxo);

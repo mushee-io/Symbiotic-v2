@@ -1,7 +1,7 @@
 /**
  * Independent Blockfrost Preprod on-chain reference-script proof.
  * A reference-script deployment is NOT proven by its address or tx hash alone.
- * The exact output must be unspent and carry the expected Plutus script hash.
+ * Proves the exact output embeds the expected Plutus script hash.\n * Callers separately verify that this reference-script UTxO remains unspent.
  * No wallet key is used or accepted by this read-only verifier.
  */
 export type ReferenceScriptExpected={

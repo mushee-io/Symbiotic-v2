@@ -12,7 +12,7 @@ export async function getPreprodJson(path: string): Promise<Record<string, unkno
   if (!key || !/^preprod[a-z0-9]+$/i.test(key)) {
     throw new RwaProviderError("Configure a Cardano Preprod Blockfrost project ID on the server", 503);
   }
-  if (!/^\/(txs\/[a-f0-9]{64}\/utxos|assets\/[a-f0-9]{58,120})$/i.test(path)) {
+  if (!/^\/(txs\/[a-f0-9]{64}(?:\/utxos)?|assets\/[a-f0-9]{58,120})$/i.test(path)) {
     throw new RwaProviderError("Unsupported Preprod lookup", 400);
   }
   let response: Response;
