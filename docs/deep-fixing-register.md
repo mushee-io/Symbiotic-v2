@@ -36,7 +36,7 @@ and \`scripts/rwa-preprod-audit.mjs\` for an operator's verified manifests.
 | --- | --- |
 | Stock trading | Stock-linked position opens, matches, closes, cancels and withdrawals prove out with chain TX hashes |
 | Stock oracle | Two independently controlled licensed equity feeds, authenticated signing, onchain oracle rounds and halts |
-| RWA contracts | Independent security review, unilateral refund/collateral recovery, stable script hash and confirmed Preprod reference script |
+| RWA contracts | Independent security review, independent testing of unilateral expiry refunds, stable script hash and confirmed Preprod reference script |
 | RWA orderbook | Persisted user-signed intents, expiry/replay controls, escrow matching and chain reconciliation |
 | RWA mint/verify | Real browser-wallet mint→verify→transfer plus indexer and proof that test certificates convey no issuer title |
 | BTC perpetuals | Funded open→funding→normal close and open→liquidate→withdraw on same current validator generation |
@@ -63,8 +63,9 @@ and \`scripts/rwa-preprod-audit.mjs\` for an operator's verified manifests.
 * Stock-backed lending for **actual Apple shares** requires lawful issuer and
   custody/right-of-redemption arrangements. A Cardano test certificate or
   synthetic derivative is not stock ownership.
-* The experimental stock-pair Aiken escrow lacks safe unilateral expiry
-  exits and audited settlement-oracle round binding. Do not fund it.
+* The experimental stock-pair escrow has a compiled expiry-refund branch but
+  does not yet have external audit or independently verified transaction-level
+  evidence. Oracle-round binding and risk controls remain incomplete.
 * Real Preprod lifecycle rehearsal requires funded Preprod wallets, owner
   signatures, operator authorisation, signable transaction CBOR and public
   transaction hashes. No tool may invent these.
@@ -97,3 +98,9 @@ trades are live until real stock-specific lifecycle receipts exist.
 
 Do not commit credentials, private keys, mnemonic phrases or tokenized
 issuer secrets. Do not treat a test contract as an audited production vault.
+
+## Additional corrections
+
+Twofold now accounts for outstanding redemption requests before calculating new lending capacity, so the same pool cash is not simultaneously assigned to withdrawal and another loan.
+
+The experimental standalone Aiken stock escrow now has a time-locked refund branch that either counterparty may invoke after expiry. This compiles, but live transaction-level exit testing, independent review and deployment evidence remain required.
