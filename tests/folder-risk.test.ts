@@ -37,7 +37,7 @@ test("Twofold respects utilisation and reserve limits in integer micro-units",()
  const r=twofoldScenario(pool);
  assert.equal(r.totalAssetsMicros,"1000000000");
  assert.equal(r.minimumReserveMicros,"100000000");
- assert.equal(r.lendableMicros,"400000000");
+ assert.equal(r.lendableMicros,"300000000");
  assert.equal(r.requestedWithdrawalMicros,"200000000");
  assert.equal(r.immediatelyRedeemableMicros,"200000000");
  assert.equal(r.decision,"NOT_AUTHORISED");
@@ -52,4 +52,12 @@ test("Twofold rejects overdrafts and nonsensical pool caps",()=>{
  assert.throws(()=>twofoldScenario({...pool,maxUtilisationBps:9600}),/Invalid/);
  assert.throws(()=>twofoldScenario({...pool,maxUtilisationBps:8000,minimumReserveBps:3000}),/100%/);
  assert.throws(()=>twofoldScenario({...pool,cashMicros:"0",loansOutstandingMicros:"0"}),/no assets/);
+});
+
+test("Twofold prioritises pending redemptions over new lending commitments",()=>{
+ const r=twofoldScenario({...pool,withdrawSharesMicros:"550000000"});
+ assert.equal(r.requestedWithdrawalMicros,"550000000");
+ assert.equal(r.immediatelyRedeemableMicros,"500000000");
+ assert.equal(r.queuedWithdrawalMicros,"50000000");
+ assert.equal(r.lendableMicros,"0");
 });

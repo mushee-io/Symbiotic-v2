@@ -85,10 +85,14 @@ export function twofoldScenario(s:TwofoldScenario){
  const availableToLendByReserve=cash>minimumReserveMicros?cash-minimumReserveMicros:0n;
  const maxLoans=totalAssetsMicros*util/BASIS;
  const availableToLendByUtil=maxLoans>loans?maxLoans-loans:0n;
- const lendableMicros=availableToLendByReserve<availableToLendByUtil?availableToLendByReserve:availableToLendByUtil;
  const requestedValueMicros=withdrawShares*totalAssetsMicros/totalShares;
  const freeCash=cash>minimumReserveMicros?cash-minimumReserveMicros:0n;
  const immediatelyRedeemableMicros=requestedValueMicros<=freeCash?requestedValueMicros:freeCash;
+ // Withdrawals have priority over new lending. Do not count promised
+ // redemption cash as capital that can be lent out a second time.
+ const afterWithdrawCash=freeCash>immediatelyRedeemableMicros?freeCash-immediatelyRedeemableMicros:0n;
+ const availableAfterRequests=availableToLendByReserve<afterWithdrawCash?availableToLendByReserve:afterWithdrawCash;
+ const lendableMicros=availableAfterRequests<availableToLendByUtil?availableAfterRequests:availableToLendByUtil;
  return {
   scenarioOnly:true as const,network:"preprod" as const,decision:"NOT_AUTHORISED" as const,
   totalAssetsMicros:totalAssetsMicros.toString(),
