@@ -9,8 +9,9 @@ export const dynamic="force-dynamic";
 type FailureCode="NOT_CONFIGURED"|"INVALID_ENDPOINT"|"INVALID_NETWORK"|
  "AUTH_REJECTED"|"UPSTREAM_ERROR"|"PROOF_REJECTED"|"NETWORK_UNREACHABLE";
 const headers={"Cache-Control":"no-store"};
-function fail(reasonCode:FailureCode){
+function fail(reasonCode:FailureCode, upstreamHttpStatus?:number){
  return NextResponse.json({network:"preprod",ready:false,status:"UNAVAILABLE",reasonCode,
+  ...(upstreamHttpStatus ? {upstreamHttpStatus} : {}),
   supportedActions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false},
   {status:503,headers});
 }
@@ -38,8 +39,8 @@ export async function GET(){
   });
  }catch{return fail("NETWORK_UNREACHABLE");}
 
- if(res.status===401||res.status===403)return fail("AUTH_REJECTED");
- if(!res.ok)return fail("UPSTREAM_ERROR");
+ if(res.status===401||res.status===403)return fail("AUTH_REJECTED",res.status);
+ if(!res.ok)return fail("UPSTREAM_ERROR",res.status);
  try{
   const payload=await res.json() as BuilderReady;
   const proof=validatedBuilderReadiness(payload);
