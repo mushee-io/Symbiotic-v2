@@ -245,7 +245,7 @@ export default function HomePage() {
         <div className={styles.footerBrand}><span>S</span><div><b>SYMBIOTIC</b><small>CARDANO DERIVATIVES INFRASTRUCTURE</small></div></div>
         <div className={styles.footerCols}>
           <div><b>PROTOCOL</b><Link href="/rwa">RWA Lab</Link><a href="#markets">Markets</a><a href="#risk">Risk</a><a href="#liquidity">Liquidity</a><a href="#architecture">Architecture</a></div>
-          <div><b>DEVELOPERS</b><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic-v2#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
+          <div><b>DEVELOPERS</b><Link href="/status/wiring">Wiring Audit</Link><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic-v2#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
           <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/folder">Folder</Link><Link href="/folder/longbow">Longbow</Link><Link href="/folder/twofold">Twofold</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link><Link href="/stats">Stats</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
         </div>
         <div className={styles.footerBottom}><span>SYMBIOTIC / CARDANO</span><span>NETWORK: PREPROD <i /></span></div>
