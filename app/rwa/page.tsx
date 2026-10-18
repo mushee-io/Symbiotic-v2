@@ -65,7 +65,7 @@ export default function RwaMarkets(){
  return <main className={styles.root}>
   <header className={styles.header}>
    <Link href="/" className={styles.logo}><span>S</span><b>SYMBIOTIC</b><small>STOCKS / RWA</small></Link>
-   <nav><Link href="/trade">PERPS</Link><Link href="/rwa" className={styles.current}>STOCKS &amp; RWA</Link><Link href="/rwa/issue">ISSUE &amp; VERIFY</Link><Link href="/portfolio">PORTFOLIO</Link><Link href="/earn">VAULT &amp; EARN</Link><Link href="/stats">STATS</Link></nav>
+   <nav><Link href="/trade">PERPS</Link><Link href="/rwa" className={styles.current}>STOCKS &amp; RWA</Link><Link href="/rwa/issue">ISSUE &amp; VERIFY</Link><Link href="/folder">FOLDER</Link><Link href="/portfolio">PORTFOLIO</Link><Link href="/earn">VAULT &amp; EARN</Link><Link href="/stats">STATS</Link></nav>
    <span className={styles.preprod}>● CARDANO PREPROD</span>
   </header>
   <div className={styles.banner}><span>STOCKS, ETFS &amp; TOKENIZED-ASSET MARKET DESIGN</span><span>PUBLIC STOCK REFERENCE CHARTS · PREPROD TRADING NOT ENABLED</span></div>

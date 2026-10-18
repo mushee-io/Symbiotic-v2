@@ -165,6 +165,7 @@ export default function TradePage() {
             <button key={item} className={view === item ? "is-active" : ""} onClick={() => setView(item)}>{navLabel[item]}</button>
           ))}
           <Link href="/rwa">RWA</Link>
+          <Link href="/folder">FOLDER</Link>
           <Link href="/portfolio">PORTFOLIO</Link>
           <Link href="/earn">VAULT &amp; EARN</Link>
           <Link href="/stats">STATS</Link>

@@ -1,5 +1,8 @@
 # Symbiotic
 
+**Folder** is the navigation hub for **Longbow** (stock-backed borrowing) and **Twofold** (lending-liquidity infrastructure). Visit `/folder`, `/folder/longbow` and `/folder/twofold`. The new pages and read-only product registry are implemented; loans, vaults, deposits and yields are not active until their terms and smart contracts are specified and verified on Cardano Preprod. See `docs/folder-modules.md`.
+
+
 Symbiotic is a Cardano-native derivatives venue with three primary products:
 
 1. **Perpetual DEX** — leveraged long/short markets, funding, collateral-backed margin, liquidation, advanced orders and portfolio risk.

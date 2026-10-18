@@ -32,6 +32,7 @@ export default function HomePage() {
         <nav className={styles.nav}>
           <a href="#markets">MARKETS</a>
           <Link href="/rwa">RWA</Link>
+          <Link href="/folder">FOLDER</Link>
           <Link href="/portfolio">PORTFOLIO</Link>
           <Link href="/earn">VAULT &amp; EARN</Link>
           <Link href="/stats">STATS</Link>
@@ -104,6 +105,29 @@ export default function HomePage() {
           <Link className={styles.secondary} href="/earn">VAULT &amp; EARN ↗</Link>
           <Link className={styles.secondary} href="/stats">ANALYTICS ↗</Link>
         </div>
+      </section>
+
+      <section className={styles.section} id="folder">
+        <div className={styles.sectionIntro}>
+          <span className={styles.sectionNumber}>F</span>
+          <div><p>SYMBIOTIC V2 / FOLDER</p><h2>STOCK CREDIT.<br />LIQUIDITY INFRASTRUCTURE.</h2></div>
+        </div>
+        <p className={styles.heroText}>Folder brings Longbow and Twofold together under one dedicated section. Longbow is for stock-backed borrowing; Twofold is for lending-liquidity management. Both have their own product pages, with transaction functions awaiting your requirements and Preprod verification.</p>
+        <div className={styles.folderGrid}>
+          <Link href="/folder/longbow" className={styles.folderCard}>
+            <span>01 / STOCK-COLLATERALISED LENDING</span>
+            <strong>LONGBOW</strong>
+            <p>Build loans against eligible tokenised stock collateral with controlled borrowing and repayment.</p>
+            <small>EXPLORE LONGBOW ↗</small>
+          </Link>
+          <Link href="/folder/twofold" className={styles.folderCard}>
+            <span>02 / LENDING LIQUIDITY</span>
+            <strong>TWOFOLD</strong>
+            <p>Develop the liquidity-allocation and capital-efficiency engine with transparent withdrawal safety.</p>
+            <small>EXPLORE TWOFOLD ↗</small>
+          </Link>
+        </div>
+        <div className={styles.heroActions}><Link href="/folder" className={styles.primary}>OPEN FOLDER ↗</Link></div>
       </section>
 
       <section className={styles.section} id="markets">
@@ -222,7 +246,7 @@ export default function HomePage() {
         <div className={styles.footerCols}>
           <div><b>PROTOCOL</b><Link href="/rwa">RWA Lab</Link><a href="#markets">Markets</a><a href="#risk">Risk</a><a href="#liquidity">Liquidity</a><a href="#architecture">Architecture</a></div>
           <div><b>DEVELOPERS</b><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/mushee-io/Symbiotic-v2#readme" target="_blank" rel="noreferrer">Docs</a><a href="#proof">Contracts</a></div>
-          <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link><Link href="/stats">Stats</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
+          <div><b>PRODUCT</b><Link href="/rwa">RWA</Link><Link href="/folder">Folder</Link><Link href="/folder/longbow">Longbow</Link><Link href="/folder/twofold">Twofold</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link><Link href="/stats">Stats</Link><Link href="/trade">Terminal</Link><a href="#proof">Explorer</a><span>Portfolio —</span></div>
         </div>
         <div className={styles.footerBottom}><span>SYMBIOTIC / CARDANO</span><span>NETWORK: PREPROD <i /></span></div>
       </footer>

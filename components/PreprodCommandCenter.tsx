@@ -240,7 +240,7 @@ export function PreprodCommandCenter({ view }: { view: View }) {
     <header className={styles.top}>
       <Link href="/" className={styles.logo}><span>S</span><b>SYMBIOTIC</b><small>V2</small></Link>
       <nav aria-label="Symbiotic navigation">
-        <Link href="/trade">TRADE</Link><Link href="/rwa">RWA</Link>
+        <Link href="/trade">TRADE</Link><Link href="/rwa">RWA</Link><Link href="/folder">FOLDER</Link>
         <Link href="/portfolio" className={view === "portfolio" ? styles.selected : ""}>PORTFOLIO</Link>
         <Link href="/earn" className={view === "earn" ? styles.selected : ""}>VAULT & EARN</Link>
         <Link href="/stats" className={view === "stats" ? styles.selected : ""}>STATS</Link>
