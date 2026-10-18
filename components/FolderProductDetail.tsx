@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {FolderShell} from "@/components/FolderShell";
+import {FolderScenarioCalculator} from "@/components/FolderScenarioCalculator";
 import {getFolderProduct,type FolderProductId} from "@/lib/folder-products";
 import styles from "@/app/folder/folder.module.css";
 
@@ -29,6 +30,7 @@ export function FolderProductDetail({id}:{id:FolderProductId}){
     </div>)}
    </div>
    <div className={styles.callout}><strong>EXECUTION PROTECTION:</strong> This module is not yet an active lending pool or stock loan market. No deposit, borrow, lend, repay, liquidate, claim-yield or withdrawal action is offered until its contracts, oracle, accounting and exit mechanisms are specified, tested, deployed and independently verified on Cardano Preprod.</div>
+   <FolderScenarioCalculator product={id}/>
    <div className={styles.lowerBar}>
     <Link className={styles.link} href={other?.path??"/folder"}>EXPLORE {other?.name.toUpperCase()??"FOLDER"} ↗</Link>
     <Link className={styles.link+" "+styles.faintLink} href="/folder">BACK TO FOLDER ↗</Link>
