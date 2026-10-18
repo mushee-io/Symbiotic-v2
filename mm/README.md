@@ -111,3 +111,22 @@ npm start
 ```
 
 The current bootstrap runtime verifies the funded Preprod wallet and emits deterministic BTC-USD bid/ask quotes. After validator deployment, the next integration phase is signed oracle rounds + real collateral/position UTxOs + MM quote execution through Perpetual, Options, and Notional.
+
+## Independent five-reference-script verification
+
+After the deployment script has completed, run:
+
+```bash
+cd mm
+npm run deploy:verify
+```
+
+This audit requires the existing Preprod Blockfrost project ID and the local public deployment manifest. **It does not sign or submit transactions**, does not need to print the mnemonic, and fails unless:
+
+- exactly five expected validators appear in a complete Cardano Preprod manifest;
+- each reference script's actual `reference_script_hash` equals its planned applied validator hash;
+- the deployment transactions are present in confirmed Cardano blocks;
+- the expected outputs contain their required ADA reserve;
+- all five reference UTxOs remain unspent at the MM wallet address.
+
+Do not describe the validators as deployed until this command passes with live evidence. Do not commit `.env` or mnemonic material.

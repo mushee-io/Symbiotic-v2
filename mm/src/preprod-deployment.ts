@@ -458,7 +458,11 @@ export async function deployValidators(plan: DeploymentPlan, wallet: MeshWallet,
         address:plan.mmAddress,scriptHash:validator.scriptHash,
         minLovelace:validator.referenceReserveLovelace
       },config.blockfrostProjectId);
-      console.log(`Skipping ${validator.name}: verified existing on-chain reference script`);
+      const liveRefs=new Set((await provider.fetchAddressUTxOs(plan.mmAddress))
+        .map(u=>u.input.txHash+"#"+u.input.outputIndex));
+      if(!liveRefs.has(recorded.referenceUtxo))
+        throw Error("Recorded reference-script output is already spent or not indexed");
+      console.log(`Skipping ${validator.name}: verified existing unspent on-chain reference script`);
       continue;
     }
 

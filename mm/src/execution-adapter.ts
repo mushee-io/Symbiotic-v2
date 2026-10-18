@@ -2,6 +2,7 @@ import { BlockfrostProvider, MeshTxBuilder, MeshWallet, deserializeAddress, type
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { config } from "./config.js";
+import {verifyReferenceScriptReceipt} from "./reference-script-proof.js";
 import type { OracleRound } from "./oracle.js";
 import type { TwoSidedQuote } from "./quote-engine.js";
 
@@ -249,6 +250,15 @@ export class PreprodMmExecutionAdapter {
 
     const liveRefs = new Set((await provider.fetchAddressUTxOs(mmAddress)).map(utxoRef));
     if (!liveRefs.has(perpetual.referenceUtxo)) throw new Error("Perpetual reference-script UTxO is not live at the MM address");
+    if(perpetual.referenceUtxo!==perpetual.txHash+"#"+perpetual.outputIndex)
+      throw Error("Perpetual reference UTxO does not match its deployment transaction");
+    // Fail closed on an unrelated output at the right address. Verify that
+    // Blockfrost independently reports the exact applied reference script.
+    await verifyReferenceScriptReceipt({
+      txHash:perpetual.txHash,outputIndex:perpetual.outputIndex,
+      address:mmAddress,scriptHash:perpetual.scriptHash,
+      minLovelace:"5000000"
+    },config.blockfrostProjectId);
 
     return new PreprodMmExecutionAdapter({
       provider,
