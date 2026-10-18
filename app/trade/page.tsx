@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {parseBtcReferenceRound,type BtcReferenceRound} from "@/lib/btc-reference-round";
 import { WalletButton } from "@/components/WalletButton";
 import { LivePerpLauncher } from "@/components/LivePerpLauncher";
 import {
@@ -40,7 +41,40 @@ export default function TradePage() {
   const [orderType, setOrderType] = useState<PerpOrderType>("MARKET");
   const [entry, setEntry] = useState(60_000);
   const [mark, setMark] = useState(60_000);
-  const [indexPrice, setIndexPrice] = useState(59_950);
+  const [indexPrice, setIndexPrice] = useState(0);
+  const [oracleRound,setOracleRound]=useState<BtcReferenceRound|null>(null);
+  const [oracleStatus,setOracleStatus]=useState("CONNECTING TO MULTI-SOURCE REFERENCE FEED");
+  const initializedFromReference=useRef(false);
+  useEffect(()=>{
+    let mounted=true;
+    async function refresh(){
+      try {
+        const response=await fetch("/api/oracle/btc-usd",{cache:"no-store"});
+        if(!response.ok)throw Error("Quorum unavailable or reference sources disagree");
+        const raw:unknown=await response.json();
+        const round=parseBtcReferenceRound(raw,Date.now());
+        if(!mounted)return;
+        setOracleRound(round);
+        setIndexPrice(round.price);
+        setOracleStatus(`REFERENCE ONLINE — ${round.sourceCount} INDEPENDENT SOURCES`);
+        if(!initializedFromReference.current){
+          initializedFromReference.current=true;
+          setMark(round.price);setEntry(round.price);
+          setSpot(round.price);setStrike(Math.round(round.price*1.1));
+          setTriggerPrice(Math.round(round.price*0.95));
+        }
+      }catch{
+        if(mounted){
+          setOracleRound(null);
+          setIndexPrice(0);
+          setOracleStatus("REFERENCE UNAVAILABLE — NO TRUSTED LIVE PRICE");
+        }
+      }
+    }
+    void refresh();
+    const timer=setInterval(()=>void refresh(),30_000);
+    return ()=>{mounted=false;clearInterval(timer);};
+  },[]);
   const [size, setSize] = useState(1_000);
   const [leverage, setLeverage] = useState(5);
   const [triggerPrice, setTriggerPrice] = useState(58_000);
@@ -119,7 +153,7 @@ export default function TradePage() {
     side: "BUY",
     size: "1.00",
     limitPrice: "60000",
-    expiry: "2026-10-01T12:00:00Z",
+    expiry: "",
     nonce: "0123456789abcdef0123456789abcdef",
     chainId: "cardano-preprod",
     maxSlippageBps: 50,
@@ -127,10 +161,18 @@ export default function TradePage() {
   const [commitment, setCommitment] = useState("");
   const [secretSalt, setSecretSalt] = useState("");
   const [intentError, setIntentError] = useState("");
+  useEffect(()=>{
+    // One-hour local private intent by default; never ship an expired 2026 date.
+    setIntent(previous=>({...previous,
+      expiry:new Date(Date.now()+60*60*1000).toISOString(),
+      nonce:randomNonce()
+    }));
+  },[]);
 
   async function prepareCommitment() {
     try {
       setIntentError("");
+      if(!intent.expiry||Date.parse(intent.expiry)<=Date.now())throw Error("Choose a future intent expiry");
       const salt = randomSalt();
       const hash = await createIntentCommitment(intent, salt);
       setSecretSalt(salt);
@@ -184,12 +226,12 @@ export default function TradePage() {
               <span className="mono-label">PERPETUAL / CARDANO</span>
               <strong>BTC-USD PERP</strong>
             </div>
-            <div><span>MARK</span><b>{money(mark)}</b></div>
-            <div><span>INDEX</span><b>{money(indexPrice)}</b></div>
+            <div><span>MODEL MARK</span><b>{money(mark)}</b></div>
+            <div><span>BTC SPOT REF</span><b>{oracleRound?money(oracleRound.price):"—"}</b></div>
             <div><span>24H</span><b>—</b></div>
-            <div><span>8H FUNDING</span><b>{(fundingRate * 100).toFixed(4)}%</b></div>
+            <div><span>MODEL FUNDING</span><b>{oracleRound?(fundingRate * 100).toFixed(4)+"%":"—"}</b></div>
             <div><span>OPEN INTEREST</span><b>—</b></div>
-            <div><span>ORACLE</span><b className="live-text"><i className="status-dot status-dot-live" />LIVE</b></div>
+            <div><span>PRICE FEED</span><b className={oracleRound?"live-text":""}>{oracleRound?"QUORUM LIVE":"UNAVAILABLE"}</b></div>
           </section>
 
           <section className="terminal-core">
@@ -199,9 +241,9 @@ export default function TradePage() {
                 <div className="intervals"><button className="is-active">1m</button><button>5m</button><button>15m</button><button>1H</button><button>4H</button><button>1D</button></div>
               </div>
               <div className="chart">
-                <p>FETCHING LIVE BTC/USD MARKET STATE…</p>
-                <strong>{money(mark)}</strong>
-                <small>Coinbase candles + multi-source quorum index</small>
+                <p>{oracleStatus}</p>
+                <strong>{oracleRound?money(oracleRound.price):"—"}</strong>
+                <small>BTC spot reference from independent exchanges; model mark and trades are not on-chain settlement prices</small>
               </div>
               <div className="chart-foot">
                 <span><b>SETTLEMENT</b>CARDANO PREPROD</span>
@@ -215,7 +257,7 @@ export default function TradePage() {
               <div className="panel-title"><span>ORDER BOOK</span><small>BTC-USD</small></div>
               <div className="book-head"><span>PRICE</span><span>SIZE</span><span>TOTAL</span></div>
               <div className="book-empty book-asks"><span>—</span><small>Venue depth is not indexed in this web deployment.</small></div>
-              <div className="book-spread"><span>MARK</span><b>{money(mark)}</b></div>
+              <div className="book-spread"><span>MODEL MARK</span><b>{money(mark)}</b></div>
               <div className="book-empty book-bids"><span>—</span><small>No synthetic orders are displayed.</small></div>
               <div className="recent-trades">
                 <div className="panel-title"><span>RECENT TRADES</span><small>ONCHAIN</small></div>
@@ -246,8 +288,8 @@ export default function TradePage() {
               ) : null}
 
               <div className="bridge-inputs" aria-hidden="true">
-                <label>MARK PRICE<input type="number" value={mark} onChange={(e) => setMark(Number(e.target.value))} /></label>
-                <label>INDEX PRICE<input type="number" value={indexPrice} onChange={(e) => setIndexPrice(Number(e.target.value))} /></label>
+                <label>SIMULATED MARK PRICE<input type="number" value={mark} onChange={(e) => setMark(Number(e.target.value))} /></label>
+                <label>INDEPENDENT BTC SPOT REFERENCE<input type="number" value={indexPrice} readOnly /></label>
                 <label>ENTRY / LIMIT PRICE<input type="number" value={entry} onChange={(e) => setEntry(Number(e.target.value))} /></label>
                 <select value={orderType} onChange={(e) => setOrderType(e.target.value as PerpOrderType)}><option>MARKET</option><option>LIMIT</option><option>STOP_MARKET</option><option>TAKE_PROFIT</option></select>
               </div>
@@ -277,7 +319,7 @@ export default function TradePage() {
               <button className="is-active">POSITIONS</button><button>OPEN ORDERS</button><button>ORDER HISTORY</button><button>TRADES</button><button>FUNDING</button><button>TRANSACTIONS</button>
             </div>
             <div className="ledger-head"><span>MARKET</span><span>SIDE</span><span>SIZE</span><span>ENTRY</span><span>MARK</span><span>LIQ. PRICE</span><span>PNL</span><span>ACTION</span></div>
-            <div className="ledger-empty"><b>POSITION INDEXER NOT CONNECTED TO THIS WEB VIEW</b><span>Live position creation settles on Cardano Preprod. This table intentionally does not invent portfolio state.</span></div>
+            <div className="ledger-empty"><b>POSITION INDEXER NOT CONNECTED TO THIS WEB VIEW</b><span>No verified BTC perpetual lifecycle is connected to this terminal. Reference-market prices and risk arithmetic are research previews only.</span></div>
           </section>
         </>
       ) : null}
@@ -332,7 +374,7 @@ export default function TradePage() {
             <label className="trade-field"><span>MAX SLIPPAGE BPS</span><input type="number" min="0" max="2000" value={intent.maxSlippageBps} onChange={(e) => setIntent({ ...intent, maxSlippageBps: Number(e.target.value) })} /></label>
             <label className="trade-field"><span>EXPIRY</span><input value={intent.expiry} onChange={(e) => setIntent({ ...intent, expiry: e.target.value })} /></label>
             <label className="trade-field"><span>NONCE</span><input value={intent.nonce} readOnly /></label>
-            <div className="notional-actions"><button onClick={rotateNonce}>ROTATE NONCE</button><button className="primary-action" onClick={prepareCommitment}>GENERATE COMMITMENT</button></div>
+            <div className="notional-actions"><button onClick={rotateNonce}>ROTATE NONCE</button><button className="primary-action" onClick={prepareCommitment} disabled={!intent.expiry}>GENERATE COMMITMENT</button></div>
             {intentError ? <p className="terminal-error">{intentError}</p> : null}
             {commitment ? <div className="commitment-box"><span>PUBLIC COMMITMENT</span><code>{commitment}</code><span>LOCAL SECRET SALT — DO NOT PUBLISH</span><code className="muted">{secretSalt}</code></div> : null}
           </aside>
