@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { TransactionBuilderClient } from "@/lib/transaction-builder";
+import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,7 @@ function isHex(value: unknown) {
 
 export async function POST(request: Request) {
   try {
+    assertPreprodBuilderRequest(process.env, "preprod");
     const endpoint = process.env.SYMBIOTIC_TX_BUILDER_ENDPOINT;
     if (!endpoint) return NextResponse.json({ error: "Transaction builder is not configured" }, { status: 503 });
     const body = await request.json() as Record<string, unknown>;

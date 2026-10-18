@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { TransactionBuilderClient, type BuilderAction } from "@/lib/transaction-builder";
 import type { CardanoNetwork } from "@/lib/cardano-execution";
+import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,7 +15,7 @@ const actions = new Set<BuilderAction>([
   "LIQUIDATE",
   "SETTLE_NOTIONAL"
 ]);
-const networks = new Set<CardanoNetwork>(["preview", "preprod", "mainnet"]);
+const networks = new Set<CardanoNetwork>(["preprod"]);
 
 export async function POST(request: Request) {
   try {
@@ -29,10 +30,8 @@ export async function POST(request: Request) {
     if (!actions.has(action)) return NextResponse.json({ error: "Unsupported builder action" }, { status: 400 });
     if (!networks.has(network)) return NextResponse.json({ error: "Unsupported Cardano network" }, { status: 400 });
 
-    const configuredNetwork = process.env.SYMBIOTIC_CARDANO_NETWORK;
-    if (configuredNetwork && configuredNetwork !== network) {
-      return NextResponse.json({ error: "Requested network does not match deployment network" }, { status: 409 });
-    }
+    try { assertPreprodBuilderRequest(process.env, network); }
+    catch (error) { return NextResponse.json({error:error instanceof Error?error.message:"Preprod network required"}, {status:409}); }
 
     const client = new TransactionBuilderClient(endpoint, process.env.SYMBIOTIC_TX_BUILDER_TOKEN);
     const prepared = await client.prepare({

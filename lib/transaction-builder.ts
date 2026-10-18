@@ -23,6 +23,7 @@ export type BuilderRequest = {
 export class TransactionBuilderClient {
   constructor(private readonly endpoint: string, private readonly bearerToken?: string) {
     const url = new URL(endpoint);
+    if(url.username || url.password || url.hash)throw new Error("Invalid transaction-builder endpoint credentials or fragment");
     if (url.protocol !== "https:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
       throw new Error("Transaction builder endpoint must use HTTPS");
     }
@@ -42,7 +43,9 @@ export class TransactionBuilderClient {
       method: "POST",
       headers: this.headers(),
       body: JSON.stringify(request),
-      cache: "no-store"
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(12000)
     });
     if (!response.ok) throw new Error(`Transaction builder prepare failed with ${response.status}`);
     return response;
