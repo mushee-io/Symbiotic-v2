@@ -1,4 +1,4 @@
-import {BlockfrostProvider,MeshTxBuilder,type UTxO} from "@meshsdk/core";
+import {BlockfrostProvider,MeshTxBuilder,resolveSlotNo,type UTxO} from "@meshsdk/core";
 import {Serialization} from "@meshsdk/core-cst";
 import {SELF_TEST_LOVELACE,Sessions,validateSelfTest,type BuilderRequest} from "./policy.js";
 
@@ -27,7 +27,7 @@ export class PreprodBuilder {
    /^[0-9]+$/.test(u.output.amount[0].quantity)&&
    BigInt(u.output.amount[0].quantity)>=5_000_000n);
   if(!adaOnly.length)throw Error("A Preprod ADA-only wallet UTxO of 5+ tADA is required");
-  const slot=await this.provider.resolveSlotNo("now");
+  const slot=Number(resolveSlotNo("preprod",now));
   if(!Number.isSafeInteger(slot)||slot<=0)throw Error("Preprod slot unavailable");
   const unsignedTxCborHex=await new MeshTxBuilder({fetcher:this.provider})
    .txOut(req.account,[{unit:"lovelace",quantity:SELF_TEST_LOVELACE.toString()}])
@@ -40,6 +40,9 @@ export class PreprodBuilder {
   const tx=Serialization.Transaction.fromCbor(unsignedTxCborHex as HexCbor);
   const body=tx.toCore().body;
   const outputs=body.outputs;
+  const allowedRefs=new Set(adaOnly.map(u=>u.input.txHash+"#"+u.input.outputIndex));
+  if(!body.inputs.length||body.inputs.some(i=>!allowedRefs.has(String(i.txId)+"#"+i.index)))
+   throw Error("Builder used an unapproved wallet UTxO");
   if(outputs.length<1||outputs.some(o=>String(o.address)!==req.account||Boolean(o.value.assets?.size)))
    throw Error("Self-test must return every output to the SAME wallet with no token assets");
   if(!outputs.some(o=>o.value.coins>=SELF_TEST_LOVELACE))
