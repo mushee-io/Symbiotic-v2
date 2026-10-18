@@ -93,7 +93,7 @@ export async function observePreprodValidators(
   },outputs as Parameters<typeof inspectReferenceOutput>[1],
    tx as Parameters<typeof inspectReferenceOutput>[2]);
   return {name:r.name,scriptHash:r.scriptHash,scriptAddress:r.scriptAddress,
-   referenceUtxo:r.referenceUtxo,txHash:r.txHash,blockHeight:proof.blockHeight,
+   referenceUtxo:r.referenceUtxo,txHash:r.txHash,blockHeight:Number(proof.blockHeight),
    confirmed:true as const,unspent:true as const};
  }));
  return {network:"preprod" as const,referenceValidatorsVerified:true as const,
