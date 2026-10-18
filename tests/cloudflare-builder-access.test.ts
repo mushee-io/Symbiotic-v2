@@ -12,7 +12,7 @@ test("Access service-token headers are all-or-nothing",()=>{
   SYMBIOTIC_BUILDER_CF_ACCESS_CLIENT_SECRET:"secret"
  }),{"CF-Access-Client-Id":"id","CF-Access-Client-Secret":"secret"});
  assert.throws(()=>cloudflareBuilderAccess({
-  SYMBIOTIC_BUILDER_CF_ACCESS_CLIENT_ID:"hello\\r\\nInjected: yes",
+  SYMBIOTIC_BUILDER_CF_ACCESS_CLIENT_ID:"hello"+String.fromCharCode(13,10)+"Injected: yes",
   SYMBIOTIC_BUILDER_CF_ACCESS_CLIENT_SECRET:"secret"
  }),/Invalid/);
 });
