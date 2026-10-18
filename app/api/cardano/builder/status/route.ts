@@ -1,32 +1,48 @@
 import {NextResponse} from "next/server";
 import {validatedBuilderReadiness,type BuilderReady} from "@/lib/preprod-builder-health";
-import {cloudflareBuilderAccess} from "@/lib/cloudflare-builder-access";
 import {assertPreprodBuilderRequest} from "@/lib/preprod-builder-guard";
+import {cloudflareBuilderAccess} from "@/lib/cloudflare-builder-access";
+
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
+
+type FailureCode="NOT_CONFIGURED"|"INVALID_ENDPOINT"|"INVALID_NETWORK"|
+ "AUTH_REJECTED"|"UPSTREAM_ERROR"|"PROOF_REJECTED"|"NETWORK_UNREACHABLE";
+const headers={"Cache-Control":"no-store"};
+function fail(reasonCode:FailureCode){
+ return NextResponse.json({network:"preprod",ready:false,status:"UNAVAILABLE",reasonCode,
+  supportedActions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false},
+  {status:503,headers});
+}
 export async function GET(){
  const endpoint=process.env.SYMBIOTIC_TX_BUILDER_ENDPOINT;
  const token=process.env.SYMBIOTIC_TX_BUILDER_TOKEN;
- const headers={"Cache-Control":"no-store"};
- if(!endpoint||!token||process.env.SYMBIOTIC_WALLET_SELF_TEST_ENABLED!=="true")return NextResponse.json({network:"preprod",ready:false,
-  status:"NOT_CONFIGURED",supportedActions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false},
-  {status:503,headers});
+ if(!endpoint||!token||process.env.SYMBIOTIC_WALLET_SELF_TEST_ENABLED!=="true")
+  return fail("NOT_CONFIGURED");
+
+ try{assertPreprodBuilderRequest(process.env,"preprod");}
+ catch{return fail("INVALID_NETWORK");}
+
+ let url:URL;
  try{
-  assertPreprodBuilderRequest(process.env,"preprod");
-  const parsed=new URL(endpoint);
-  if(parsed.protocol!=="https:"||parsed.username||parsed.password||parsed.hash)
-   throw Error("Builder endpoint must be authenticated HTTPS");
-  const res=await fetch(parsed.href.replace(/\/$/,"")+"/ready",{
-   headers:{Authorization:"Bearer "+token,...cloudflareBuilderAccess(process.env)},redirect:"error",cache:"no-store",
-   signal:AbortSignal.timeout(9000)});
-  if(!res.ok)throw Error("Builder not ready");
+  url=new URL(endpoint);
+  if(url.protocol!=="https:"||url.username||url.password||url.hash||url.search)
+   return fail("INVALID_ENDPOINT");
+ }catch{return fail("INVALID_ENDPOINT");}
+
+ let res:Response;
+ try{
+  res=await fetch(url.href.replace(/\/$/,"")+"/ready",{
+   headers:{Authorization:"Bearer "+token,...cloudflareBuilderAccess(process.env)},
+   redirect:"error",cache:"no-store",signal:AbortSignal.timeout(9000)
+  });
+ }catch{return fail("NETWORK_UNREACHABLE");}
+
+ if(res.status===401||res.status===403)return fail("AUTH_REJECTED");
+ if(!res.ok)return fail("UPSTREAM_ERROR");
+ try{
   const payload=await res.json() as BuilderReady;
   const proof=validatedBuilderReadiness(payload);
   return NextResponse.json({...proof,status:"READY"}, {headers});
- }catch{
-  // No private token or internal provider URL exposed.
-  return NextResponse.json({network:"preprod",ready:false,status:"UNAVAILABLE",
-   supportedActions:["WALLET_SELF_TEST"],contractTransactionsEnabled:false},
-   {status:503,headers});
- }
+ }catch{return fail("PROOF_REJECTED");}
 }
