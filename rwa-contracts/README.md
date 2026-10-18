@@ -20,17 +20,15 @@ escrowed in sUSD test collateral, *not ownership of either stock*.
 4. Mathematical PnL is paid in test sUSD, capped by combined locked collateral.
    The transaction must pay exactly those amounts to the pinned owners.
 5. Mutual refund requires BOTH owner signatures and exact original payouts.
-6. Only one stock-pair script input per transaction is allowed to prevent
+6. After `expiry_ms`, either owner can unilaterally trigger a `TimeoutRefund` that returns exactly each party's original collateral. Settlement validity ranges must be entirely BEFORE expiry; timed-out refunds must be entirely AFTER expiry. The two branches are disjoint.
+7. Only one stock-pair script input per transaction is allowed to prevent
    crediting the same outputs to multiple positions.
 
 ### Critical risks / blockers
 
 - No on-chain market-hours/halts enforcement, independent oracle-round NFT
   state, replay register, order matching or user-side entry-intent proof yet.
-- No margin replenishment, single-party expiry escape or liquidation path:
-  **a party could refuse to co-sign a refund**. Not suitable for unattended
-  custody, production, or public deposit. This is only a compiled and tested
-  prototype contract for a two-party, explicitly consenting Preprod rehearsal.
+- Unilateral expiry refunds are implemented but **need transaction-level adversarial tests**, correct datum construction and independent audit. There is no early liquidation, leverage risk recovery or asynchronous market halts. Not suitable for unattended custody, production or public deposits. This is still an experimental test-only prototype.
 - No funds can be moved by this repository without local signing keys; none
   should ever be committed or sent to the assistant.
 - No per-contract mainnet deploy, and no backing in real equities.

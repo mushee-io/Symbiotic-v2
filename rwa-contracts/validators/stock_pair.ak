@@ -21,10 +21,12 @@ pub type StockPairDatum {
   size_micro_shares: Int,
   entry_price_micros: Int,
   nonce: Int,
+  expiry_ms: Int,
 }
 pub type StockPairAction {
   Settle(Int, Int)
   MutualRefund
+  TimeoutRefund
 }
 
 fn payout(total:Int,long_margin:Int,size:Int,entry:Int,mark:Int)->Int {
@@ -59,12 +61,20 @@ validator stock_pair(
    datum.entry_price_micros > 0,
    datum.size_micro_shares > 0,
    datum.nonce >= 0,
+   datum.expiry_ms > 0,
    datum.ticker == "AAPL" || datum.ticker == "NVDA",
    actual == total,
    own_script_input_count == 1,
    own_script_output_count == 0,
   }
   when action is {
+   TimeoutRefund -> and {
+    valid_base,
+    self.validity_range |> interval.is_entirely_after(datum.expiry_ms),
+    list.has(self.extra_signatories,datum.long_owner) || list.has(self.extra_signatories,datum.short_owner),
+    paid_to(self.outputs,datum.long_address,quote_policy,quote_asset)==datum.long_collateral,
+    paid_to(self.outputs,datum.short_address,quote_policy,quote_asset)==datum.short_collateral,
+   }
    MutualRefund -> and {
     valid_base,
     list.has(self.extra_signatories, datum.long_owner),
@@ -83,6 +93,7 @@ validator stock_pair(
      list.has(self.extra_signatories,oracle_b),
      list.has(self.extra_signatories,settlement_keeper),
      self.validity_range |> interval.contains(attested_at_ms),
+     self.validity_range |> interval.is_entirely_before(datum.expiry_ms),
      paid_to(self.outputs,datum.long_address,quote_policy,quote_asset)==long_return,
      paid_to(self.outputs,datum.short_address,quote_policy,quote_asset)==short_return,
     }
