@@ -13,6 +13,7 @@ import {
   type UTxO,
 } from "@meshsdk/core";
 import { config } from "./config.js";
+import {verifyReferenceScriptReceipt} from "./reference-script-proof.js";
 
 const EXPECTED_BLUEPRINT_SHA256 = "bdb8eea4d9159c9026a66479f6389d5cad4fddf55f32957222855652b05e2855";
 const EXPECTED_AIKEN_VERSION = "v1.1.22";
@@ -389,7 +390,7 @@ function utxoRef(utxo: UTxO) {
   return `${utxo.input.txHash}#${utxo.input.outputIndex}`;
 }
 
-async function waitForOutputZero(provider: BlockfrostProvider, txHash: string, expectedAddress: string) {
+async function waitForOutputZero(provider: BlockfrostProvider, txHash: string, expectedAddress: string, scriptHash: string, reserve: string) {
   let lastError: unknown;
   for (let attempt = 0; attempt < 48; attempt += 1) {
     try {
@@ -399,6 +400,12 @@ async function waitForOutputZero(provider: BlockfrostProvider, txHash: string, e
         if (output.output.address !== expectedAddress) {
           throw new Error(`Reference output #0 address mismatch for ${txHash}`);
         }
+        // Blockfrost's raw transaction UTxO endpoint independently proves that
+        // output #0 embeds THIS exact reference script, not merely tADA at an address.
+        await verifyReferenceScriptReceipt({
+          txHash,outputIndex:0,address:expectedAddress,
+          scriptHash,minLovelace:reserve
+        },config.blockfrostProjectId);
         return output;
       }
     } catch (error) {
@@ -438,8 +445,20 @@ export async function deployValidators(plan: DeploymentPlan, wallet: MeshWallet,
   }
 
   for (const validator of plan.validators) {
-    if (manifest.validators.some((entry) => entry.name === validator.name)) {
-      console.log(`Skipping ${validator.name}: already recorded in local manifest`);
+    const recorded=manifest.validators.find(entry=>entry.name===validator.name);
+    if (recorded) {
+      if(recorded.scriptHash!==validator.scriptHash||
+         recorded.scriptAddress!==validator.scriptAddress||
+         recorded.referenceUtxo!==recorded.txHash+"#"+recorded.outputIndex)
+        throw Error("Existing deployment receipt conflicts with current script plan");
+      // Never trust an old local manifest without verifying the exact on-chain
+      // reference-script hash again.
+      await verifyReferenceScriptReceipt({
+        txHash:recorded.txHash,outputIndex:recorded.outputIndex,
+        address:plan.mmAddress,scriptHash:validator.scriptHash,
+        minLovelace:validator.referenceReserveLovelace
+      },config.blockfrostProjectId);
+      console.log(`Skipping ${validator.name}: verified existing on-chain reference script`);
       continue;
     }
 
@@ -458,7 +477,7 @@ export async function deployValidators(plan: DeploymentPlan, wallet: MeshWallet,
     const signedTx = await wallet.signTx(unsignedTx);
     const txHash = await wallet.submitTx(signedTx);
     console.log(`${validator.name} submitted: ${txHash}`);
-    await waitForOutputZero(provider, txHash, plan.mmAddress);
+    await waitForOutputZero(provider, txHash, plan.mmAddress, validator.scriptHash, validator.referenceReserveLovelace);
 
     const receipt: DeploymentReceipt = {
       name: validator.name,

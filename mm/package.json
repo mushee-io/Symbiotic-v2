@@ -11,6 +11,8 @@
     "deploy:plan": "tsx scripts/deploy-plan.ts",
     "deploy:adopt": "tsx scripts/adopt-existing-deployment.ts",
     "deploy:validators": "tsx scripts/deploy-validators.ts",
+    "deploy:verify": "tsx scripts/verify-validators.ts",
+    "test": "tsx --test tests/*.test.ts",
     "oracle:once": "tsx scripts/oracle-once.ts",
     "seed:user": "tsx scripts/seed-user-susd.ts",
     "perp:verify": "tsx scripts/verify-perp-open.ts",
