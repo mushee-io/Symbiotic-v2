@@ -41,3 +41,38 @@ test("assembler rejects non-CIP-30 witness, changed CBOR, or expired session",()
  assert.throws(()=>builder.assemble({requestId,unsignedTxCborHex:unsignedTxCborHex+"00",witnessSetCborHex},now),/CBOR changed/);
  assert.throws(()=>builder.assemble({requestId,unsignedTxCborHex,witnessSetCborHex},now+900000),/expired/);
 });
+
+test("Mesh SDK v1 full signed transaction CBOR is accepted only for identical original body",()=>{
+ const tx=Serialization.Transaction.fromCbor(unsignedTxCborHex as Parameters<typeof Serialization.Transaction.fromCbor>[0]);
+ const originalHash=String(tx.getId());
+ const witness=Serialization.TransactionWitnessSet.fromCbor(witnessSetCborHex as Parameters<typeof Serialization.TransactionWitnessSet.fromCbor>[0]);
+ tx.setWitnessSet(witness);
+ const fullSignedTxCborHex=tx.toCbor();
+ assert.equal(Number.parseInt(fullSignedTxCborHex.slice(0,2),16)>>5,4);
+ const builder=new PreprodBuilder("preprod"+"a".repeat(32));
+ const now=1000;
+ const requestId=builder.sessions.store({
+  unsignedTxCborHex,txBodyHash:originalHash,expiresAt:now+900000,consumed:false
+ },now);
+ const result=builder.assemble({requestId,unsignedTxCborHex,witnessSetCborHex:fullSignedTxCborHex},now+2000);
+ const output=Serialization.Transaction.fromCbor(result.signedTxCborHex as Parameters<typeof Serialization.Transaction.fromCbor>[0]);
+ assert.equal(String(output.getId()),originalHash);
+ assert.equal(output.witnessSet().vkeys()?.values().length,1);
+});
+
+test("rejects a wallet-provided full transaction with a changed transaction body",()=>{
+ const unsigned=Serialization.Transaction.fromCbor(unsignedTxCborHex as Parameters<typeof Serialization.Transaction.fromCbor>[0]);
+ const originalHash=String(unsigned.getId());
+ const manipulated=unsignedTxCborHex.replace("1a001e8480","1a001e8481");
+ assert.notEqual(manipulated,unsignedTxCborHex);
+ const modified=Serialization.Transaction.fromCbor(manipulated as Parameters<typeof Serialization.Transaction.fromCbor>[0]);
+ modified.setWitnessSet(Serialization.TransactionWitnessSet.fromCbor(witnessSetCborHex as Parameters<typeof Serialization.TransactionWitnessSet.fromCbor>[0]));
+ const builder=new PreprodBuilder("preprod"+"a".repeat(32));
+ const now=1000;
+ const requestId=builder.sessions.store({
+  unsignedTxCborHex,txBodyHash:originalHash,expiresAt:now+900000,consumed:false
+ },now);
+ assert.throws(()=>builder.assemble({
+  requestId,unsignedTxCborHex,witnessSetCborHex:modified.toCbor()
+ },now+2000),/Signed transaction body changed/);
+});

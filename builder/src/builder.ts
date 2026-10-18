@@ -68,7 +68,22 @@ export class PreprodBuilder {
   const session=this.sessions.get(input.requestId,input.unsignedTxCborHex,now);
   const tx=Serialization.Transaction.fromCbor(input.unsignedTxCborHex as HexCbor);
   if(String(tx.getId())!==session.txBodyHash)throw Error("Transaction body changed");
-  const witness=Serialization.TransactionWitnessSet.fromCbor(input.witnessSetCborHex as HexCbor);
+  // Mesh SDK v1 signTx() can return either CIP-30 witness-set CBOR (major
+  // type 5/map) or an entire signed transaction (major type 4/array).
+  // Only extract witnesses from full transactions whose body hash exactly
+  // equals the independently validated original. Never accept wallet body edits.
+  const majorType=Number.parseInt(input.witnessSetCborHex.slice(0,2),16)>>5;
+  let witness:ReturnType<typeof Serialization.TransactionWitnessSet.fromCbor>;
+  if(majorType===5){
+   witness=Serialization.TransactionWitnessSet.fromCbor(input.witnessSetCborHex as HexCbor);
+  }else if(majorType===4){
+   const signed=Serialization.Transaction.fromCbor(input.witnessSetCborHex as HexCbor);
+   if(String(signed.getId())!==session.txBodyHash)
+    throw Error("Signed transaction body changed");
+   witness=signed.witnessSet();
+  }else{
+   throw Error("Unsupported wallet signature CBOR format");
+  }
   if(!witness.vkeys()?.values().length)throw Error("Wallet did not provide a verification-key witness");
   if(witness.bootstraps()||witness.nativeScripts()||witness.plutusV1Scripts()||
    witness.plutusV2Scripts()||witness.plutusV3Scripts()||witness.plutusData()||witness.redeemers())

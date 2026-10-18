@@ -63,7 +63,9 @@ export function PreprodBuilderWalletTest(){
     BigInt(prepared.summary.feeLovelace)>1_500_000n)
     throw Error("Builder transaction summary failed wallet safety checks");
    setPhase("Review the Lace popup carefully. All outputs must return to your wallet. Signing may take several minutes; there is a 15-minute window.");
-   const witnessSetCborHex=await wallet.signTx(prepared.unsignedTxCborHex,true);
+   // Mesh SDK v1 returns a full transaction by default; the third argument
+   // false requests raw CIP-30 witness-set CBOR instead of a transaction array.
+   const witnessSetCborHex=await wallet.signTx(prepared.unsignedTxCborHex,true,false);
    setPhase("Assembling signed Preprod transaction...");
    const assemble=await fetch("/api/cardano/assemble",{method:"POST",headers:{"content-type":"application/json"},
     body:JSON.stringify({requestId:prepared.requestId,unsignedTxCborHex:prepared.unsignedTxCborHex,witnessSetCborHex}),cache:"no-store"});

@@ -17,9 +17,9 @@ export function publicBuilderError(route:string|undefined,error:unknown):{error:
   return {error:"Wallet signing session expired or was already used. Start a new self-test.",code:"SIGNING_SESSION_EXPIRED"};
  if(/Wallet did not provide a verification-key witness|verification-key/i.test(message))
   return {error:"Wallet did not return a required payment signature.",code:"SIGNATURE_REQUIRED"};
- if(/No script or non-vkey witnesses allowed|witness/i.test(message))
+ if(/No script or non-vkey witnesses allowed|witness|Unsupported wallet signature CBOR format|Major type mismatch/i.test(message))
   return {error:"Wallet returned a witness set this ADA-only self-test cannot accept.",code:"WITNESS_INVALID"};
- if(/Transaction body changed|Assembled transaction body changed/i.test(message))
+ if(/Transaction body changed|Signed transaction body changed|Assembled transaction body changed/i.test(message))
   return {error:"Signed transaction does not match the prepared self-test.",code:"TRANSACTION_MISMATCH"};
  return {error:"Could not assemble wallet signature. Check Ubuntu builder logs for the exact cause.",code:"ASSEMBLY_INVALID"};
 }
