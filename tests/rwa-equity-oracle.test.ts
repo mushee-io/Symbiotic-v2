@@ -49,3 +49,17 @@ test("missing or nonindependent provider config fails",()=>{
  assert.throws(()=>equityFeedConfigFromEnv(JSON.stringify([feeds[0],{...feeds[1],publicKeyPem:feeds[0].publicKeyPem}])),/signing keys/);
  assert.equal(equityFeedConfigFromEnv(JSON.stringify(feeds)).length,3);
 });
+
+test("provider URLs block direct IP destinations and local origins",()=>{
+ const config=(url:string)=>JSON.stringify([feeds[0],{...feeds[1],url}]);
+ assert.throws(()=>equityFeedConfigFromEnv(config("https://127.0.0.1/equities/{ticker}")),/Private/);
+ assert.throws(()=>equityFeedConfigFromEnv(config("https://[::1]/equities/{ticker}")),/Private/);
+ assert.throws(()=>equityFeedConfigFromEnv(config("https://relay.internal/equities/{ticker}")),/Private/);
+});
+test("oracle HTTP requests never follow redirects into untrusted destinations",async()=>{
+ const example=observation(0);
+ let option:RequestInit|undefined;
+ const record=(async(_url:RequestInfo|URL,init?:RequestInit)=>{option=init;return new Response(JSON.stringify(example),{status:200})}) as typeof fetch;
+ await assert.rejects(()=>verifiedEquityRound({ticker:"AAPL",feeds:[feeds[0]],at:instant,fetchImpl:record}),/quorum/);
+ assert.equal(option?.redirect,"error");
+});

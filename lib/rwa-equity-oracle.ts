@@ -1,4 +1,5 @@
 import {createHash, createPublicKey, verify} from "node:crypto";
+import {isIP} from "node:net";
 import {RWA_MARKETS, marketSession} from "./rwa-market";
 
 export type EquityFeedConfig={id:string;url:string;publicKeyPem:string};
@@ -27,7 +28,7 @@ export function equityFeedConfigFromEnv(value:string|undefined):EquityFeedConfig
   if(url.protocol!=="https:"||url.username||url.password||url.hash)throw Error("Equity feed requires HTTPS without credentials in the URL");
   if(!url.pathname.includes("{ticker}")&&!url.search.includes("%7Bticker%7D")&&!x.url.includes("{ticker}"))
    throw Error("Equity feed URL must include {ticker}");
-  if(/(^localhost$|^127\.|^10\.|^192\.168\.|^169\.254\.|^172\.(1[6-9]|2[0-9]|3[01])\.|\.local$)/i.test(url.hostname))
+  if(isIP(url.hostname.replace(/^\[|\]$/g,""))!==0 || /(^localhost$|\.localhost$|\.local$|\.internal$|\.home$)/i.test(url.hostname))
    throw Error("Private equity feed hosts are not allowed");
   const key=createPublicKey(x.publicKeyPem);
   if(key.asymmetricKeyType!=="ed25519")throw Error("Equity signer must use Ed25519");
@@ -67,7 +68,7 @@ export async function verifiedEquityRound(input:{
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),4500);
   try{
-   const r=await (input.fetchImpl??fetch)(url,{headers:{Accept:"application/json"},cache:"no-store",signal:controller.signal});
+   const r=await (input.fetchImpl??fetch)(url,{headers:{Accept:"application/json"},cache:"no-store",redirect:"error",signal:controller.signal});
    if(!r.ok)throw Error("Equity feed HTTP "+r.status);
    const body=await r.json() as SignedEquityObservation;
    const v=verifyEquityObservation(body,f,ticker,at.getTime());

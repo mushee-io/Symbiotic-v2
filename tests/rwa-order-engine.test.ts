@@ -40,3 +40,8 @@ test("ticker and quote unit cannot cross between markets",()=>{
  const b=order("buy-0001","BUY"),s=order("sell-0001","SELL","200000000","1000000","NVDA");
  assert.equal(proposeStockMatches([b,s],at).fills.length,0);
 });
+
+test("self-matches fail closed rather than silently discarding a sell order",()=>{
+ const buy=order("buy-0001","BUY");const sell=order("sell-0001","SELL");
+ assert.throws(()=>proposeStockMatches([buy,{...sell,owner:buy.owner}],at),/Self-trade/);
+});

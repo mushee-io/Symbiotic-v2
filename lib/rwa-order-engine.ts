@@ -50,7 +50,7 @@ export function proposeStockMatches(orders:StockLimitOrder[],at=new Date()){
   let i=0,j=0;
   while(i<buys.length&&j<sells.length){
    const buy=buys[i],sell=sells[j];
-   if(buy.owner===sell.owner){j++;continue;}
+   if(buy.owner===sell.owner)throw Error("Self-trade or wash-trading candidate rejected");
    const bp=BigInt(buy.limitPriceMicros),sp=BigInt(sell.limitPriceMicros);
    if(bp<sp)break;
    const q1=remains.get(buy.id)!,q2=remains.get(sell.id)!;
