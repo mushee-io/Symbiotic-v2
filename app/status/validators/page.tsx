@@ -1,17 +1,26 @@
 import Link from "next/link";
 import type {Metadata} from "next";
+import {observePreprodValidators,parsePublicPreprodManifest} from "@/lib/preprod-validator-observer";
 export const metadata:Metadata={title:"Validator Proofs — Cardano Preprod | Symbiotic V2"};
 export const dynamic="force-dynamic";
 type Proof={name:string;scriptHash:string;txHash:string;referenceUtxo:string;blockHeight:number};
 type Result={referenceValidatorsVerified?:boolean;reason?:string;validators?:Proof[];validatorCount?:number};
 export default async function ValidatorsPage(){
- // API environment is server-only; never copy private provider credentials into client code.
- const url=(process.env.VERCEL_URL?"https://"+process.env.VERCEL_URL:"http://localhost:3000")+"/api/protocol/validators";
- let data:Result={referenceValidatorsVerified:false,reason:"Reference validator proofs unavailable"};
- try{
-  const response=await fetch(url,{cache:"no-store",signal:AbortSignal.timeout(12000)});
-  data=await response.json() as Result;
- }catch{}
+ // Server-side only. Never expose Blockfrost credentials in HTML or client JS.
+ const raw=process.env.SYMBIOTIC_PREPROD_VALIDATOR_MANIFEST_JSON;
+ let data:Result={referenceValidatorsVerified:false,
+  reason:"Public five-validator deployment manifest has not yet been connected."};
+ if(raw){
+  try{
+   if(raw.length>50000)throw Error("Oversized manifest");
+   const parsed=parsePublicPreprodManifest(JSON.parse(raw) as unknown);
+   data=await observePreprodValidators(parsed,
+    process.env.SYMBIOTIC_RWA_BLOCKFROST_PROJECT_ID??"");
+  }catch{
+   data={referenceValidatorsVerified:false,
+    reason:"Validator manifest or independent Cardano Preprod receipts are incomplete."};
+  }
+ }
  return <main style={{minHeight:"100vh",background:"#07150e",color:"#e6f5dd",padding:"50px max(22px,8vw)",fontFamily:"system-ui"}}>
   <nav style={{display:"flex",gap:24,marginBottom:60,fontSize:12}}><Link href="/">SYMBIOTIC V2</Link><Link href="/status/builder">WALLET BUILDER</Link><Link href="/status/wiring">17 MODULES</Link></nav>
   <p style={{color:"#afe178",letterSpacing:2,fontSize:12}}>CARDANO PREPROD / ON-CHAIN EVIDENCE</p>
