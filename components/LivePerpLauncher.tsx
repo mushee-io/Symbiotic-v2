@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BrowserWallet,
   MeshTxBuilder,
@@ -47,7 +47,19 @@ export function LivePerpLauncher({
   onSizeUsdChange,
   onLeverageChange,
 }: LivePerpLauncherProps) {
-  const [status, setStatus] = useState("READY — LACE PREPROD");
+  const [status, setStatus] = useState("PREPROD TRADING IS NOT VERIFIED");
+  const [tradeReady,setTradeReady]=useState(false);
+  useEffect(()=>{
+    let active=true;
+    void fetch("/api/trading/readiness",{cache:"no-store"})
+      .then(async response=>{
+        const data=await response.json() as {executionEnabled?:boolean;reason?:string};
+        if(!active)return;
+        setTradeReady(response.ok&&data.executionEnabled===true);
+        if(!response.ok||!data.executionEnabled)setStatus(data.reason||"Preprod validator and withdrawal evidence missing");
+      }).catch(()=>{if(active){setTradeReady(false);setStatus("Trading readiness verification unavailable");}});
+    return ()=>{active=false;};
+  },[]);
   const [txHash, setTxHash] = useState("");
   const [oraclePrice, setOraclePrice] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -56,10 +68,15 @@ export function LivePerpLauncher({
   const marketOrderReady = orderType === "MARKET";
 
   async function openPosition() {
-    if (busy || !marketOrderReady) return;
+    if (busy || !marketOrderReady || !tradeReady) return;
     setBusy(true);
     setTxHash("");
     try {
+      // Fail closed even if a UI race occurs before a disabled button updates.
+      const gate=await fetch("/api/trading/readiness",{cache:"no-store"});
+      const gateStatus=await gate.json() as {executionEnabled?:boolean};
+      if(!gate.ok||gateStatus.executionEnabled!==true)
+        throw Error("Live BTC perps are disabled until on-chain validator and safe-exit evidence exists");
       if (!Number.isFinite(sizeUsd) || sizeUsd < 10 || sizeUsd > 10_000) throw new Error("Live notional must be $10–$10,000");
       if (!Number.isFinite(leverage) || leverage < 1 || leverage > 20) throw new Error("Leverage must be 1–20×");
 
@@ -142,7 +159,7 @@ export function LivePerpLauncher({
     <div className="live-launcher">
       <div className="live-launcher-head">
         <div>
-          <span className="mono-label">LIVE EXECUTION</span>
+          <span className="mono-label">PREPROD EXECUTION / EVIDENCE GATED</span>
           <strong>BTC-USD PERP</strong>
         </div>
         <span className="technical-badge"><i className="status-dot status-dot-live" />PREPROD</span>
@@ -174,8 +191,8 @@ export function LivePerpLauncher({
         <div className="execution-warning">LIVE WALLET SUBMISSION IS CURRENTLY MARKET-ORDER ONLY. {orderType.replace("_", " ")} REMAINS A LOCAL VALIDATION PREVIEW.</div>
       ) : null}
 
-      <button className="execute-button" type="button" disabled={busy || !marketOrderReady} onClick={openPosition}>
-        {busy ? "BUILDING TRANSACTION…" : marketOrderReady ? `OPEN LIVE ${side}` : "MARKET ORDER REQUIRED"}
+      <button className="execute-button" type="button" disabled={busy || !marketOrderReady || !tradeReady} onClick={openPosition}>
+        {busy ? "BUILDING TRANSACTION…" : !tradeReady ? "TRADING BLOCKED — ON-CHAIN PROOF REQUIRED" : marketOrderReady ? `OPEN LIVE ${side}` : "MARKET ORDER REQUIRED"}
       </button>
 
       <div className={status.startsWith("ERROR") ? "execution-status is-error" : "execution-status"} aria-live="polite">{status}</div>
