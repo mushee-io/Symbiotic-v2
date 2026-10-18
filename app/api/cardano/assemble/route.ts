@@ -12,6 +12,7 @@ function isHex(value: unknown) {
 export async function POST(request: Request) {
   try {
     assertPreprodBuilderRequest(process.env, "preprod");
+    if (process.env.SYMBIOTIC_WALLET_SELF_TEST_ENABLED !== "true") return NextResponse.json({error:"Wallet self-test assembly not enabled"}, {status:503});
     const endpoint = process.env.SYMBIOTIC_TX_BUILDER_ENDPOINT;
     if (!endpoint) return NextResponse.json({ error: "Transaction builder is not configured" }, { status: 503 });
     const body = await request.json() as Record<string, unknown>;

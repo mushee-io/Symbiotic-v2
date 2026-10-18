@@ -72,3 +72,24 @@ client wallet must inspect, sign and submit the returned transaction.
   The builder obtains UTxOs from Blockfrost **Preprod**.
 - A live Preprod wallet signing test is still required. **Do not call the
   infrastructure milestone complete based only on CI and `/ready`.**
+
+## Browser test after Ubuntu deployment
+
+1. Expose the loopback service through an HTTPS reverse proxy with access
+   controls and rate limits. Vercel cannot reach `127.0.0.1` on Ubuntu.
+2. In the Vercel Production environment set
+   `SYMBIOTIC_TX_BUILDER_ENDPOINT=https://<your-builder-domain>`,
+   `SYMBIOTIC_TX_BUILDER_TOKEN=<same-auth-token>`, and
+   `SYMBIOTIC_WALLET_SELF_TEST_ENABLED=true`.
+   Never paste these credentials into a chat or commit them to Git.
+3. Redeploy the web app. Visit `/api/cardano/builder/status` and confirm
+   that `ready` is `true`.
+4. Visit `/status/builder`, connect a CIP-30 Cardano **Preprod** wallet with
+   at least one **ADA-only output worth 5 tADA or more**, and run the test.
+   Approve only after checking the entire transaction in the wallet popup.
+5. Verify the resulting public Preprod transaction hash on the explorer.
+   The transaction spends fees even though it returns ADA to your own wallet.
+
+A successful self-test **does not enable any contract-level execution**.
+Stock-linked escrow, perps, lending and options require their own audited
+builder implementations and full funded transaction lifecycles.
