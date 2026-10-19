@@ -1,5 +1,4 @@
-import {ProfessionalTerminal} from "@/components/ProfessionalTerminal";
+import SymbioticTerminal from "./advanced/page";
 
-export default function TradePage(){
- return <ProfessionalTerminal/>;
-}
+/** Launch App: the original, branded Symbiotic perpetuals/options/notional desk. */
+export default function TradePage(){return <SymbioticTerminal/>;}
