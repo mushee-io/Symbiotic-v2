@@ -225,6 +225,35 @@ export function SymbioticLanding(){
    </div>
   </section>
 
+  <section className={styles.roadmapSection} id="roadmap">
+   <div className={styles.container}>
+    <div className={styles.sectionHeader}>
+     <div><span className={styles.eyebrow}>WHAT COMES NEXT</span><h2 className={styles.h2}>Building what&apos;s<br/>next<span className={styles.punctuation}>.</span></h2></div>
+     <p>A clear view of what exists in code, what needs public-chain proof, and what the ecosystem is working toward.</p>
+    </div>
+    <div className={styles.roadmapGrid}>
+      <article className={styles.roadmapCard}>
+       <span className={styles.roadmapNum}>01 / IN THE REPOSITORY</span>
+       <h3>Built for tomorrow.</h3>
+       <p>Core Aiken validators, responsive product interfaces, wallet observation, contract observers and tested lending prototypes.</p>
+       <div className={styles.roadmapLinks}><Link href="/status/wiring">Review build status <ArrowUpRight size={17}/></Link></div>
+      </article>
+      <article className={styles.roadmapCard}>
+       <span className={styles.roadmapNum}>02 / ON PREPROD</span>
+       <h3>Verify every step.</h3>
+       <p>Five-validator deployment, funded BTC position lifecycles, stock-linked settlement, and borrowing and vault withdrawal rehearsals.</p>
+       <div className={styles.roadmapLinks}><Link href="/status/lace-deploy">Deployment console <ArrowUpRight size={17}/></Link></div>
+      </article>
+      <article className={styles.roadmapCard}>
+       <span className={styles.roadmapNum}>03 / LOOKING AHEAD</span>
+       <h3>Keep it moving.</h3>
+       <p>Options, private intent markets, richer protocol analytics, broader integrations and independent security review.</p>
+       <div className={styles.roadmapLinks}><Link href="/trade">Explore markets <ArrowUpRight size={17}/></Link></div>
+      </article>
+    </div>
+   </div>
+  </section>
+
   <section className={styles.finalSection} id="liquidity">
    <div className={styles.container}>
     <div className={styles.finalPanel}>
@@ -241,7 +270,7 @@ export function SymbioticLanding(){
    <div className={styles.container}>
     <div className={styles.footerGrid}>
      <div className={styles.footerBrand}><div><HaloShape className={styles.footerLogo}/><strong>Symbiotic V2</strong></div><p>A more fluid future for Cardano-native finance.</p><span>Currently building and testing on Cardano Preprod.</span></div>
-     <div className={styles.footerLinks}><h3>Explore</h3><Link href="/trade">Trade</Link><Link href="/rwa">RWA Lab</Link><Link href="/folder">Folder</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link></div>
+     <div className={styles.footerLinks}><h3>Explore</h3><Link href="/trade">Trade</Link><Link href="/rwa">RWA Lab</Link><Link href="/folder">Folder</Link><Link href="/folder/longbow">Longbow</Link><Link href="/folder/twofold">Twofold</Link><Link href="/portfolio">Portfolio</Link><Link href="/earn">Vault &amp; Earn</Link></div>
      <div className={styles.footerLinks}><h3>Developers</h3><Link href="/status/validators">Validator Status</Link><Link href="/status/wiring">Product Readiness</Link><Link href="/stats">Network Stats</Link><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight size={13}/></a></div>
     </div>
     <div className={styles.footerBottom}><span>© 2026 Symbiotic V2 · Cardano Preprod</span><span>Built for the next wave of DeFi.</span></div>
