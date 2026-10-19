@@ -64,28 +64,3 @@
 @media(max-width:1100px){.header nav{gap:16px}.net{display:none}.hero{gap:40px}.content{gap:4%}}
 @media(max-width:800px){.hero,.content{grid-template-columns:1fr}.hero{padding-top:55px}.heroPanel{max-width:560px}.statRow{grid-template-columns:1fr 1fr}.statRow>div:nth-child(2){border-right:0}.content{padding-top:36px}.header{padding:0 4%}.brand small{display:none}}
 @media(max-width:500px){.header{height:62px}.header nav{gap:9px}.header nav a{font-size:8px}.brand b{font-size:10px}.eyebrow span:last-child{display:none}.hero h1{font-size:50px}.hero{padding-bottom:45px}.panel{padding:18px}.twoFields{grid-template-columns:1fr;gap:0}.walletRow{flex-direction:column;align-items:stretch}.walletRow select{max-width:none}.statRow>div{padding:16px}.statRow strong{font-size:10px}.footer{flex-direction:column}.proof dl>div{grid-template-columns:1fr}}
-
-
-/* Professional exchange visual language for RWA issuance & verification. */
-.root{background:#000!important;color:#f5f5f5!important;font-family:"Helvetica Neue",Arial,ui-sans-serif,sans-serif!important}
-.root *{font-family:inherit}
-.header{height:59px!important;background:#000!important;border-color:#262626!important;padding:0 22px!important}
-.brand{font-size:14px!important;letter-spacing:-.02em!important}
-.brand span{width:37px!important;height:31px!important;background:#fff!important;color:#000!important}
-.brand small{color:#999!important;border-color:#303030!important}
-.header nav a{font-size:12px!important;letter-spacing:0!important}
-.header nav a:hover,.header nav a.current{color:#fff!important}
-.net,.kicker{color:#00c781!important}
-.eyebrow,.statRow{border-color:#262626!important}
-.hero{background:#000!important;padding:44px 3vw!important;gap:4%!important}
-.hero h1{font:600 clamp(40px,4.8vw,70px)/1 "Helvetica Neue",Arial,sans-serif!important}
-.hero h1 em{color:#00c781!important}
-.lead{color:#a1a1a1!important}
-.heroPanel{background:#101010!important;border-color:#292929!important;box-shadow:none!important}
-.heroPanel div{color:#00c781!important}
-.heroPanel small{color:#999!important}
-.panel{background:#0b0b0b!important;border-color:#292929!important}
-.panel input:not([type=checkbox]),.panel select{background:#050505!important;border-color:#343434!important;color:#f5f5f5!important}
-.action,.mintButton{border-color:#3a3a3a!important;color:#fff!important}
-.mintButton{background:#00c781!important;color:#000!important;border-color:#00c781!important}
-@media(max-width:800px){.header{height:auto!important;padding:12px 18px!important}.hero{padding:34px 18px!important;grid-template-columns:1fr!important}}
