@@ -18,11 +18,11 @@ export function FolderProductDetail({id}:{id:FolderProductId}){
    <aside className={styles.heroAction}>
     <span>PRODUCT</span><strong>{p.name.toUpperCase()}</strong>
     <span>NETWORK</span><strong>CARDANO PREPROD</strong>
-    <span>EXECUTION STATUS</span><b>DESIGN PENDING / NOT LIVE</b>
+    <span>EXECUTION STATUS</span><b>VALIDATORS COMPILED / NOT DEPLOYED</b>
    </aside>
   </section>
   <section className={styles.section}>
-   <div className={styles.sectionHead}><h2>PRODUCT WORKSPACE.</h2><span>0{p.features.length} PLANNED CAPABILITIES</span></div>
+   <div className={styles.sectionHead}><h2>PRODUCT WORKSPACE</h2><span>0{p.features.length} PROTOCOL CAPABILITIES</span></div>
    <div className={styles.features}>
     {p.features.map((feature,i)=><div key={feature.label} className={styles.feature}>
      <div className={styles.featureHeader}><strong>{String(i+1).padStart(2,"0")} / {feature.label.toUpperCase()}</strong><small>{feature.status}</small></div>

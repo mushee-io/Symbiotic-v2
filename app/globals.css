@@ -248,3 +248,45 @@ button{color:inherit}
   .product-metrics>div,.greeks-grid span,.notional-flow span{border-right:0!important;border-bottom:1px solid var(--border)!important}
   .product-metrics>div:last-child,.greeks-grid span:last-child,.notional-flow span:last-child{border-bottom:0!important}
 }
+
+
+/* Advanced derivatives workbench: same exchange language as the new /trade
+   dashboard. These selectors do not modify the approved landing page. */
+.terminal-app{
+ --bg-primary:#000;--bg-secondary:#080808;--bg-tertiary:#141414;
+ --text-primary:#f5f5f5;--text-secondary:#a1a1a1;--text-dim:#777;
+ --border:#262626;--border-strong:#3b3b3b;--accent:#00c781;
+ --positive:#00c781;--negative:#f23668;
+ --mono:"Helvetica Neue",Arial,ui-sans-serif,sans-serif;
+ --sans:"Helvetica Neue",Arial,ui-sans-serif,sans-serif;
+ background:#000!important;color:#f5f5f5!important;font-family:var(--sans)!important;
+}
+.terminal-app :is(.terminal-nav,.market-tape,.terminal-core,.chart-column,.chart,.orderbook-column,.order-entry,.panel-tabs,.panel-title,.trade-field input,.trade-field select,.terminal-ledger,.product-main,.product-ticket,.terminal-footer){background:#000!important}
+.terminal-app :is(.terminal-nav,.market-tape,.terminal-core,.chart-column,.chart,.orderbook-column,.panel-tabs,.panel-title,.terminal-ledger,.order-entry){border-color:#262626!important}
+.terminal-app .terminal-nav{height:59px;grid-template-columns:190px 1fr auto}
+.terminal-app .terminal-brand{font-size:14px;font-weight:700}
+.terminal-app .terminal-brand span{background:#fff;color:#000}
+.terminal-app .terminal-nav nav button,.terminal-app .terminal-nav nav a{font-size:12px;letter-spacing:0;padding:0 12px;color:#a1a1a1}
+.terminal-app .terminal-nav nav button:hover,.terminal-app .terminal-nav nav a:hover,.terminal-app .terminal-nav nav button.is-active{color:#fff;background:#171717;border-color:#262626}
+.terminal-app .terminal-nav nav button.is-active{box-shadow:inset 0 -2px 0 #fff}
+.terminal-app .market-tape{min-height:67px}
+.terminal-app .market-tape>div{border-color:#262626!important;padding:12px 16px}
+.terminal-app .market-tape span{color:#999!important;font-size:10px!important}
+.terminal-app .market-tape b{font-size:12px!important}
+.terminal-app .panel-tabs{height:45px}
+.terminal-app .panel-tabs button{font-size:12px;color:#a1a1a1;letter-spacing:0}
+.terminal-app .panel-tabs button.is-active{color:#fff;box-shadow:inset 0 -2px 0 #fff}
+.terminal-app .chart{background:#000!important}
+.terminal-app .chart svg.live-btc-candles{background:#000}
+.terminal-app .orderbook-column{background:#000!important}
+.terminal-app .order-entry{background:#000!important}
+.terminal-app .book-head,.terminal-app .book-spread,.terminal-app .chart-foot{border-color:#262626}
+.terminal-app .product-main{padding:65px 3vw}
+.terminal-app .product-main h1{font-family:var(--sans);font-size:clamp(42px,5vw,77px);font-weight:600;letter-spacing:-.07em}
+.terminal-app .product-main h1 span{color:#00c781}
+.terminal-app .product-main>p{font-size:14px;color:#a1a1a1}
+.terminal-app .product-ticket{background:#080808!important}
+.terminal-app .live-launcher{border-color:#262626}
+.terminal-app .execute-button:not(:disabled){background:#00c781!important;border-color:#00c781!important;color:#000!important}
+.terminal-app .execution-summary,.terminal-app .execution-summary>div,.terminal-app .risk-readout span{border-color:#262626}
+.terminal-app .terminal-footer{color:#888;border-color:#262626}
