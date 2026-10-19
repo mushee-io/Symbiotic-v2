@@ -129,6 +129,9 @@ validator longbow(
         and {
           base_ok,
           lender_signed,
+          oracle_signer != keeper_signer,
+          oracle_signer != datum.lender,
+          keeper_signer != datum.lender,
           list.has(self.extra_signatories, oracle_signer),
           list.has(self.extra_signatories, keeper_signer),
           attested_at_ms > 0,
