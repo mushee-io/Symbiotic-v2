@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {FluidHero} from "@/components/FluidHero";
 import { LiveHomepageOracle } from "@/components/LiveHomepageOracle";
 import { PREPROD_LIVE } from "@/lib/preprod-live";
 import styles from "./home.module.css";
@@ -25,65 +26,7 @@ const referenceTx = PREPROD_LIVE.perpetual.referenceUtxo.split("#")[0];
 export default function HomePage() {
   return (
     <main className={styles.home}>
-      <header className={styles.header}>
-        <Link className={styles.brand} href="/" aria-label="Symbiotic home">
-          <span>S</span><b>SYMBIOTIC</b>
-        </Link>
-        <nav className={styles.nav}>
-          <a href="#markets">MARKETS</a>
-          <Link href="/rwa">RWA</Link>
-          <Link href="/folder">FOLDER</Link>
-          <Link href="/portfolio">PORTFOLIO</Link>
-          <Link href="/earn">VAULT &amp; EARN</Link>
-          <Link href="/stats">STATS</Link>
-          <a href="#architecture">ARCHITECTURE</a>
-          <a href="#risk">RISK</a>
-          <a href="#liquidity">LIQUIDITY</a>
-          <a href="#proof">PROOF</a>
-          <a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">GITHUB</a>
-        </nav>
-        <div className={styles.headerActions}>
-          <span className={styles.network}><i />PREPROD</span>
-          <Link className={styles.launchSmall} href="/trade">LAUNCH TERMINAL ↗</Link>
-        </div>
-      </header>
-
-      <section className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <p className={styles.kicker}>SYMBIOTIC / CARDANO / DERIVATIVES</p>
-          <h1>PERPETUAL<br />MARKETS.<br /><em>SETTLED</em><br />ONCHAIN.</h1>
-          <p className={styles.heroText}>A non-custodial perpetual trading protocol built around transparent position state, deterministic settlement and Cardano-native infrastructure.</p>
-          <div className={styles.heroActions}>
-            <Link className={styles.primary} href="/trade">LAUNCH TERMINAL ↗</Link>
-            <a className={styles.secondary} href="#architecture">EXPLORE PROTOCOL</a>
-          </div>
-          <div className={styles.heroMeta}>
-            <span><i />CARDANO PREPROD</span>
-            <span>BTC-USD PERP</span>
-            <span>POSITION UTxO</span>
-            <span>AIKEN V3</span>
-          </div>
-        </div>
-
-        <div className={styles.heroDiagram} aria-label="Symbiotic transaction architecture">
-          <div className={styles.diagramLabel}>LIVE EXECUTION PATH</div>
-          <div className={styles.diagramRail} />
-          {[
-            ["01", "TRADER"],
-            ["02", "ORDER"],
-            ["03", "MARGIN ENGINE"],
-            ["04", "ORACLE"],
-            ["05", "VALIDATOR"],
-            ["06", "POSITION UTxO"],
-            ["07", "SETTLEMENT"],
-          ].map(([num, label], index) => (
-            <div className={styles.diagramNode} style={{ top: `${8 + index * 13}%` }} key={label}>
-              <span>{num}</span><b>{label}</b><i />
-            </div>
-          ))}
-          <div className={styles.diagramFoot}>WALLET → CARDANO → CONFIRMATION</div>
-        </div>
-      </section>
+      <FluidHero />
 
       <section className={styles.networkStrip} aria-label="Protocol network strip">
         <div><span>NETWORK</span><strong>PREPROD <i /></strong></div>
