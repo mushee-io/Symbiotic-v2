@@ -263,7 +263,7 @@ export function LiveBtcOracleBridge() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname !== "/trade") return;
+    if (pathname !== "/trade/advanced") return;
 
     let cancelled = false;
     let oracleController: AbortController | undefined;
