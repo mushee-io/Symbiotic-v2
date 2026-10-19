@@ -39,15 +39,41 @@ test("reject malicious or malformed public order book rows before display",()=>{
  assert.equal(validPositive("0"),null);
  assert.equal(validPositive("NaN"),null);
 });
-test("original homepage untouched, advanced Preprod execution preserved, terminal interactive components present",()=>{
+test("approved homepage untouched, original Symbiotic terminal restored, optional spot dashboard preserved",()=>{
  const page=readFileSync("app/page.tsx","utf8");
  const trade=readFileSync("app/trade/page.tsx","utf8");
  const legacy=readFileSync("app/trade/advanced/page.tsx","utf8");
+ const spot=readFileSync("app/trade/spot/page.tsx","utf8");
+ const bridge=readFileSync("components/LiveBtcOracleBridge.tsx","utf8");
  const terminal=readFileSync("components/ProfessionalTerminal.tsx","utf8");
  assert.match(page,/<FluidHero\s*\/>/);
- assert.match(trade,/<ProfessionalTerminal\s*\/>/);
+ assert.match(trade,/advanced\/page/);
+ assert.match(spot,/<ProfessionalTerminal\s*\/>/);
+ assert.ok(bridge.includes('pathname !== "/trade" && pathname !== "/trade/advanced"'));
  assert.ok(legacy.includes("LivePerpLauncher"));
  assert.ok(legacy.includes("NOTIONAL"));
  for(const item of ["ProfessionalCandleChart","Open orders","Trade history","Search crypto","DEMO MARKET DATA","/trade/advanced","BTC-EUR","MA10","Last trades","TP/SL"])
   assert.ok(terminal.includes(item),"Missing expected interactive feature "+item);
+});
+
+test("Symbiotic interface tokens and shared navigation are preserved across every financial module",()=>{
+ const theme=readFileSync("app/globals.css","utf8");
+ const common=readFileSync("components/SymbioticAppHeader.tsx","utf8");
+ const navCss=readFileSync("app/symbiotic-app-nav.module.css","utf8");
+ assert.ok(theme.includes("--accent:#c9ff3d"));
+ assert.ok(theme.includes("--text-primary:#f2eedb"));
+ assert.ok(!theme.includes("Advanced derivatives workbench: same exchange language"));
+ for(const route of ["PERPETUALS","OPTIONS","NOTIONAL MARKET","RWA","FOLDER","PORTFOLIO","VAULT & EARN","STATS"])
+  assert.ok(common.includes(route),"Missing shared app section "+route);
+ assert.ok(navCss.includes("#06100f"));
+ for(const path of [
+   "components/FolderShell.tsx","components/PreprodCommandCenter.tsx",
+   "app/rwa/page.tsx","app/rwa/issue/page.tsx"
+ ]){
+  assert.ok(readFileSync(path,"utf8").includes("<SymbioticAppHeader"),"Missing unified app navigation "+path);
+ }
+ const detail=readFileSync("components/FolderProductDetail.tsx","utf8");
+ assert.ok(detail.includes("FolderScenarioCalculator"),"Loan risk preview must be preserved");
+ const index=readFileSync("components/PreprodCommandCenter.tsx","utf8");
+ assert.ok(index.includes("PreprodPositions"),"Real position index must be preserved");
 });
