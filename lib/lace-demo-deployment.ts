@@ -3,7 +3,6 @@
  * Single-wallet authorities are for SHOWCASE TESTNET only.
  * No wallet private keys or server-side signing are used.
  */
-import "server-only";
 import {createHash} from "node:crypto";
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
