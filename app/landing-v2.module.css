@@ -162,6 +162,18 @@
 .proofLink:hover{color:#8067a4;}
 .proofNote{font-size:12px;line-height:1.55;color:#948f99;margin:8px 0 0;}
 
+.roadmapSection{padding:55px 24px 100px;}
+.roadmapGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.roadmapCard{display:flex;flex-direction:column;min-height:360px;padding:34px;border:1px solid #e1dfe3;border-radius:23px;background:#ffffffa6;}
+.roadmapCard:nth-child(2){background:#e8e3ed;border-color:#e8e3ed;}
+.roadmapCard:nth-child(3){background:#e5eae7;border-color:#e5eae7;}
+.roadmapNum{font-size:11px;letter-spacing:.095em;color:#8b8590;font-weight:600;}
+.roadmapCard h3{font-weight:600;font-size:clamp(29px,2.8vw,40px);line-height:1.11;letter-spacing:-.05em;margin:55px 0 17px;}
+.roadmapCard p{font-size:16px;line-height:1.62;color:#77717b;margin:0 0 25px;max-width:380px;}
+.roadmapLinks{margin-top:auto;padding-top:16px;border-top:1px solid #69626d2c;}
+.roadmapLinks a{font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:15px;}
+.roadmapLinks a:hover{color:#8067a4;}
+
 .finalSection{padding:0 24px 100px;}
 .finalPanel{min-height:490px;border-radius:28px;position:relative;overflow:hidden;background:#dfe6e1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:70px;isolation:isolate;}
 .finalPanel h2{font-size:clamp(47px,5.4vw,81px);line-height:1.04;letter-spacing:-.065em;font-weight:600;margin:0 0 22px;}
@@ -186,6 +198,9 @@
  .featurePurple p{font-size:14px;}
  .useLayout{gap:35px;}
  .productGrid{grid-template-columns:repeat(2,minmax(0,1fr));}
+ .roadmapGrid{grid-template-columns:1fr;}
+ .roadmapCard{min-height:285px;}
+ .roadmapCard h3{margin-top:40px;}
  .riskCopy{padding:45px;}
  .proofLayout{gap:40px;}
 }
@@ -260,6 +275,8 @@
  .proofSection{padding-top:30px;padding-bottom:75px;}
  .proofPanel{padding:24px 21px;}
  .proofPanelHeader{font-size:9px;}
+ .roadmapSection{padding:40px 18px 70px;}
+ .roadmapCard{padding:27px;}
  .finalSection{padding-bottom:60px;}
  .finalPanel{min-height:470px;padding:40px 26px;}
  .finalPanel h2{font-size:44px;}
