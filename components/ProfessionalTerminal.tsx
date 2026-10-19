@@ -73,6 +73,9 @@ export function ProfessionalTerminal(){
  const [mobileBook,setMobileBook]=useState(false);
 
  useEffect(()=>{
+  if(window.matchMedia("(max-width: 1100px)").matches)setSidebarOpen(false);
+ },[]);
+ useEffect(()=>{
   try{
    const savedPair=localStorage.getItem("symbiotic-terminal-pair")??"";
    if(isTerminalPair(savedPair))setPair(savedPair);
@@ -232,7 +235,8 @@ export function ProfessionalTerminal(){
    {sidebarOpen&&<aside className={styles.markets}>
     <div className={styles.marketsTitle}><strong>Markets</strong><button title="Hide markets" aria-label="Hide markets" onClick={()=>setSidebarOpen(false)}><PanelLeftClose size={18}/></button></div>
     <div className={styles.searchWrap}><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search crypto" aria-label="Search crypto markets"/></div>
-    <div className={styles.marketTabs}>{["All","Favorites","Top","New","Stocks"].map(name=>
+    <div className={styles.marketTabs}>{["All","Favorites","Top","New","Stocks"].map(name=>name==="Stocks"?
+     <Link key={name} href="/rwa" title="Explore stock-linked RWA references">Stocks ↗</Link>:
      <button key={name} className={marketFilter===name?styles.tabActive:""} onClick={()=>setMarketFilter(name)}>{name}</button>)}
     </div>
     <div className={styles.assetTitles}><span>Name</span><span>Reference price / 24h</span></div>
@@ -245,7 +249,7 @@ export function ProfessionalTerminal(){
        <button className={styles.star} type="button" aria-label={(favorites.includes(id)?"Remove ":"Add ")+m.symbol+" favourite"} onClick={()=>setFavorites(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id])}>
         <Star size={17} fill={favorites.includes(id)?"#c7c7c7":"none"}/>
        </button>
-       <button className={styles.assetPick} onClick={()=>setPair(id)} type="button" aria-pressed={isActive}>
+       <button className={styles.assetPick} onClick={()=>{setPair(id);if(window.matchMedia("(max-width: 1100px)").matches)setSidebarOpen(false)}} type="button" aria-pressed={isActive}>
         <span className={styles.coin} data-coin={m.symbol}>{m.symbol==="BTC"?"₿":m.symbol.slice(0,1)}</span>
         <span className={styles.coinMeta}><b>{m.symbol}</b><small>{m.name}</small></span>
         <span className={styles.coinPrice}><b>{id===pair?"":"~"}{fmt(reference,reference>10?2:4)}</b><small className={moveUp&&isActive?styles.positive:styles.subtle}>{id===pair?percent(snapshot.changePct):"SAMPLE · DEMO"}</small></span>
