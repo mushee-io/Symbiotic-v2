@@ -1,12 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {scriptAddress,serializeAddressObj} from "@meshsdk/core";
 import {observePreprodValidators,parsePublicPreprodManifest} from "../lib/preprod-validator-observer";
 const names=["collateral","perpetual","options","notional","registry"];
 const mmAddress="addr_test1"+"q".repeat(75);
 const hash=(letter:string,n:number)=>letter.repeat(n);
 const receipts=names.map((name,i)=>({
  name,title:name+"."+name+".spend",
- scriptHash:(i+1).toString(16).repeat(56),scriptAddress:"addr_test1"+"p".repeat(75),
+ scriptHash:(i+1).toString(16).repeat(56),
+ scriptAddress:serializeAddressObj(scriptAddress((i+1).toString(16).repeat(56)),0),
  txHash:(i+1).toString(16).repeat(64),outputIndex:0,
  referenceUtxo:(i+1).toString(16).repeat(64)+"#0",referenceReserveLovelace:"5000000"
 }));
@@ -17,6 +19,7 @@ test("manifest rejects missing, duplicate or malformed validator receipts",()=>{
  assert.throws(()=>parsePublicPreprodManifest({...manifest,validators:receipts.slice(0,4)}),/five-validator/);
  assert.throws(()=>parsePublicPreprodManifest({...manifest,validators:[...receipts.slice(0,4),receipts[0]]}),/duplicate/);
  assert.throws(()=>parsePublicPreprodManifest({...manifest,network:"mainnet"}),/five-validator/);
+ assert.throws(()=>parsePublicPreprodManifest({...manifest,validators:[{...receipts[0],scriptAddress:receipts[1].scriptAddress},...receipts.slice(1)]}),/script address does not match/);
 });
 test("cross-checks confirmed reference hash and unspent status against independent data",async()=>{
  const fake=(async(input:RequestInfo|URL,init?:RequestInit)=>{
