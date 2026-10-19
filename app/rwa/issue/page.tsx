@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import {SymbioticAppHeader} from "@/components/SymbioticAppHeader";
 import { useEffect, useState } from "react";
 import {
   BrowserWallet,
@@ -242,11 +243,7 @@ export default function RwaPage() {
 
   return (
     <main className={styles.root}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.brand}><span>S</span><b>SYMBIOTIC</b><small>RWA LAB</small></Link>
-        <nav><Link href="/">OVERVIEW</Link><Link href="/trade">TRADE</Link><Link href="/rwa" className={styles.current}>RWA</Link><Link href="/portfolio">PORTFOLIO</Link><Link href="/earn">VAULT &amp; EARN</Link><Link href="/stats">STATS</Link><a href="https://github.com/mushee-io/Symbiotic-v2" target="_blank" rel="noreferrer">SOURCE ↗</a></nav>
-        <span className={styles.net}>● CARDANO PREPROD</span>
-      </header>
+      <SymbioticAppHeader active="rwa"/>
 
       <div className={styles.eyebrow}><span>SYMBIOTIC / TOKENISATION</span><span>01 / PREPROD TEST ASSET INFRASTRUCTURE</span></div>
       <section className={styles.hero}>
