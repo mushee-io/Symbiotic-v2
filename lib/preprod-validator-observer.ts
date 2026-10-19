@@ -3,6 +3,7 @@
  * cross-check the exact reference script against Blockfrost and require its
  * UTxO to remain unspent. No signer or wallet private key is involved.
  */
+import {scriptAddress as cardanoScriptAddress,serializeAddressObj} from "@meshsdk/core";
 import {inspectReferenceOutput} from "../mm/src/reference-script-proof";
 
 const BASE="https://cardano-preprod.blockfrost.io/api/v0";
@@ -44,6 +45,9 @@ export function parsePublicPreprodManifest(input:unknown):PublicPreprodManifest{
      !/^[1-9][0-9]*$/.test(r.referenceReserveLovelace)||
      refs.has(r.referenceUtxo)||scriptHashes.has(r.scriptHash))
    throw Error("Invalid or duplicate validator deployment receipt");
+  const expectedAddress=serializeAddressObj(cardanoScriptAddress(r.scriptHash),0);
+  if(r.scriptAddress!==expectedAddress)
+   throw Error("Validator script address does not match its verified script hash");
   names.add(r.name);refs.add(r.referenceUtxo);scriptHashes.add(r.scriptHash);
  }
  if(REQUIRED.some(name=>!names.has(name)))throw Error("Missing required Preprod validator");
