@@ -38,8 +38,8 @@
 .searchWrap input{border:0;outline:none;width:100%;background:none;color:#fff;font-size:13px;min-width:0}
 .searchWrap input::placeholder{color:#828282}
 .marketTabs{display:flex;align-items:center;overflow:auto hidden;scrollbar-width:none;border-bottom:1px solid var(--line);margin-top:5px;padding:0 10px}
-.marketTabs button{height:43px;padding:0 9px;white-space:nowrap;background:none;border:0;color:#8c8c8c;position:relative}
-.marketTabs button:hover{color:#fff}
+.marketTabs button,.marketTabs a{height:43px;padding:0 9px;white-space:nowrap;background:none;border:0;color:#8c8c8c;position:relative;display:flex;align-items:center}
+.marketTabs button:hover,.marketTabs a:hover{color:#fff}
 .marketTabs .tabActive{color:white}
 .tabActive:after{position:absolute;bottom:0;left:9px;right:9px;height:2px;background:#fff;content:""}
 .assetTitles{display:flex;justify-content:space-between;padding:12px 18px;color:#888;font-size:11px}
