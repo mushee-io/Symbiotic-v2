@@ -135,3 +135,17 @@ export function parseCorePosition(input:{
   nonce:nonce.toString(),entryOrStrike:entryOrStrike.toString(),
   sideOrKind,settlement,expiryMs};
 }
+
+/** Strictly decode a position at a chain-verified script address without
+ * relying on self-reported wallet claims. Never trust this without verifying
+ * its reference script and the complete unspent UTxO snapshot first. */
+export function parseAnyCorePosition(input:{
+ kind:CorePositionKind;output:unknown;decodedDatum:unknown;stableUnit:string
+}):ObservedPosition{
+ const fields=fieldList(input.decodedDatum,input.kind==="perpetual"?7:11);
+ const ownerKeyHash=bytes(fields[0],"owner key hash");
+ if(!HEX56.test(ownerKeyHash))throw Error("Malformed position owner key hash");
+ const parsed=parseCorePosition({...input,ownerKeyHash});
+ if(!parsed)throw Error("Position owner binding mismatch");
+ return parsed;
+}

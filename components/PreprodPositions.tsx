@@ -62,7 +62,7 @@ export function PreprodPositions({address,refreshCounter}:{address:string;refres
        {position.expiryMs?<p style={{fontSize:11}}>Expiry: {new Date(Number(position.expiryMs)).toLocaleString("en-GB",{timeZone:"UTC"})} UTC</p>:null}
        <a href={"https://preprod.cexplorer.io/tx/"+position.txHash}
         target="_blank" rel="noreferrer" style={{fontSize:11,color:"#b7ef8e",overflowWrap:"anywhere"}}>
-        VERIFY UNTRANSACTED OUTPUT {position.reference.slice(0,16)}… ↗
+        VIEW CONFIRMED OUTPUT {position.reference.slice(0,16)}… ↗
        </a>
       </article>)}
      </div>}
