@@ -22,13 +22,13 @@ export default async function ValidatorsPage(){
   }
  }
  return <main style={{minHeight:"100vh",background:"#07150e",color:"#e6f5dd",padding:"50px max(22px,8vw)",fontFamily:"system-ui"}}>
-  <nav style={{display:"flex",gap:24,marginBottom:60,fontSize:12}}><Link href="/">SYMBIOTIC V2</Link><Link href="/status/builder">WALLET BUILDER</Link><Link href="/status/wiring">17 MODULES</Link></nav>
+  <nav style={{display:"flex",gap:24,marginBottom:60,fontSize:12}}><Link href="/">SYMBIOTIC V2</Link><Link href="/status/builder">WALLET BUILDER</Link><Link href="/status/wiring">17 MODULES</Link><Link href="/status/lace-deploy">DEPLOY WITH LACE ↗</Link></nav>
   <p style={{color:"#afe178",letterSpacing:2,fontSize:12}}>CARDANO PREPROD / ON-CHAIN EVIDENCE</p>
   <h1 style={{fontSize:"clamp(34px,6vw,76px)",letterSpacing:"-.05em",margin:"15px 0"}}>VALIDATOR PROOFS</h1>
   <p>Five Plutus V3 reference scripts must be confirmed on Cardano Preprod, match the exact expected hashes, and remain unspent. A deployed website is not proof.</p>
   <div style={{padding:24,border:"1px solid #45644b",margin:"30px 0"}}>
    <b style={{color:data.referenceValidatorsVerified?"#b8ea77":"#fac18d"}}>{data.referenceValidatorsVerified?"5 / 5 VERIFIED ON-CHAIN":"DEPLOYMENT NOT YET VERIFIED"}</b>
-   {!data.referenceValidatorsVerified?<p>{data.reason??"Missing deployment evidence"}</p>:null}
+   {!data.referenceValidatorsVerified?<><p>{data.reason??"Missing deployment evidence"}</p><p><Link href="/status/lace-deploy" style={{color:"#b8ea77"}}>Deploy the five validators with Lace ↗</Link></p></>:null}
   </div>
   {(data.validators??[]).map(v=><section key={v.name} style={{padding:"20px 0",borderBottom:"1px solid #415845"}}>
    <h2 style={{textTransform:"uppercase",fontSize:20}}>{v.name}</h2>

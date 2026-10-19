@@ -78,7 +78,19 @@ export function LaceDemoValidatorDeploy(){
     }
    }
    setReceipts(verified);
-   setMessage("Preprod deployment plan ready. No transaction has been signed yet.");
+   const pendingKey=storedKey(address,data.blueprintSha256)+":pending";
+   const pendingRaw=window.localStorage.getItem(pendingKey);
+   if(pendingRaw){
+    try{
+     const candidate=JSON.parse(pendingRaw) as {name?:string;hash?:string};
+     if(typeof candidate.name==="string"&&data.validators.some(v=>v.name===candidate.name)&&
+        typeof candidate.hash==="string"&&/^[a-f0-9]{64}$/i.test(candidate.hash)&&
+        !verified[candidate.name]){
+      setPending({name:candidate.name,hash:candidate.hash.toLowerCase()});
+     }else window.localStorage.removeItem(pendingKey);
+    }catch{window.localStorage.removeItem(pendingKey);}
+   }
+   setMessage("Preprod deployment plan ready. Previous receipts independently rechecked.");
   }catch(e){setMessage(e instanceof Error?e.message:"Could not connect Lace");}
   finally{setBusy(false);}
  }
@@ -99,6 +111,7 @@ export function LaceDemoValidatorDeploy(){
   window.localStorage.setItem(storedKey(activePlan.walletAddress,activePlan.blueprintSha256),
    JSON.stringify(updated));
   setPending(null);
+  window.localStorage.removeItem(storedKey(activePlan.walletAddress,activePlan.blueprintSha256)+":pending");
   setMessage(name.toUpperCase()+" reference script confirmed on Cardano Preprod at block "+data.blockHeight+".");
  }
  async function deploy(v:Validator){
@@ -134,6 +147,8 @@ export function LaceDemoValidatorDeploy(){
    const txHash=await wallet.submitTx(signed);
    if(!/^[a-f0-9]{64}$/i.test(txHash))throw Error("Invalid transaction hash returned by Lace");
    setPending({name:v.name,hash:txHash.toLowerCase()});
+   window.localStorage.setItem(storedKey(plan.walletAddress,plan.blueprintSha256)+":pending",
+    JSON.stringify({name:v.name,hash:txHash.toLowerCase()}));
    setMessage("Submitted "+v.name+". Cardano Preprod confirmation can take several seconds; click Verify Receipt.");
   }catch(e){setMessage(e instanceof Error?e.message:"Deployment unsuccessful");}
   finally{setBusy(false);}
