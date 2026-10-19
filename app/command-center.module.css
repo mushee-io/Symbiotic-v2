@@ -85,39 +85,3 @@
 @media(max-width:1180px){.top nav a{padding:0 8px;font-size:9px}.connectPanel{grid-template-columns:1fr 1fr}.connectHeading{grid-column:1/-1}.manualControls{min-width:250px}}
 @media(max-width:850px){.top{height:auto;min-height:68px;flex-wrap:wrap;padding:12px 4%}.top nav{order:3;width:100%;height:42px;overflow-x:auto}.top nav a{flex:1;justify-content:center;padding:0 9px}.titleRow{grid-template-columns:1fr;padding:50px 4%;gap:25px}.heroStatus{max-width:520px}.metrics{grid-template-columns:repeat(2,1fr)}.metric:nth-child(2){border-right:0}.metric:nth-child(-n+2){border-bottom:1px solid #344036}.columns{grid-template-columns:1fr;gap:25px}.connectPanel{grid-template-columns:1fr}.connectHeading{grid-column:auto}}
 @media(max-width:500px){.titleRow h1{font-size:49px}.context span:last-child,.networkBadge{display:none}.connectControls{flex-wrap:wrap}.connectControls select{flex:1}.metric{padding:24px 17px}.metric strong{font-size:21px}.panel{padding:20px}.allocation strong{font-size:17px}.footerPanel{align-items:flex-start;flex-direction:column}.bars{gap:5px}.chartHead{align-items:flex-start;flex-direction:column;gap:7px}}
-
-
-/* Unified exchange-grade app styling: preserve wallet/data behavior. */
-.root{background:#000!important;color:#f5f5f5!important;font-family:"Helvetica Neue",Arial,ui-sans-serif,sans-serif!important}
-.root *{font-family:inherit}
-.top{height:59px!important;background:#000!important;border-color:#262626!important;padding:0 22px}
-.logo{font-size:14px!important;font-weight:700!important;letter-spacing:-.02em!important}
-.logo>span{width:37px!important;height:31px!important;background:#fff!important;color:#000!important;font-size:21px}
-.logo small{color:#999!important;border-color:#333!important}
-.top nav a{font-size:12px!important;font-weight:500!important;letter-spacing:0!important;padding:0 13px!important}
-.top nav a:hover,.top nav a.selected{color:#fff!important;background:#101010!important;border-color:#fff!important}
-.networkBadge{color:#00c781!important;border-color:#303030!important;font-size:10px}
-.context{border-color:#262626!important;background:#080808;color:#888!important;padding:12px 3vw!important;font-size:11px!important}
-.titleRow{background:#000!important;padding:45px 3vw 38px!important;grid-template-columns:minmax(0,1.8fr) minmax(260px,.72fr);gap:4%!important}
-.overline{color:#00c781!important;font:11px Arial,sans-serif!important;letter-spacing:.09em!important}
-.titleRow h1{font:600 clamp(36px,4.8vw,68px)/1.03 "Helvetica Neue",Arial,sans-serif!important;letter-spacing:-.059em!important;margin:16px 0!important}
-.titleRow h1 em,.footerPanel em,.panel h2 em{color:#00c781!important}
-.titleRow p{color:#a1a1a1!important;font-size:14px!important}
-.heroStatus{background:#0b0b0b!important;border-color:#262626!important;padding:22px!important}
-.heroStatus strong{color:#f5f5f5!important;font:600 15px Arial,sans-serif!important}
-.connectPanel{background:#080808!important;border-color:#262626!important;padding:17px 3vw!important}
-.connectHeading span,.connectControls span{color:#00c781!important}
-.connectControls select,.manualControls input,.addWatch input{background:#050505!important;border-color:#303030!important;color:#f5f5f5!important}
-.primary,.outline{border-color:#4a4a4a!important;font:600 12px "Helvetica Neue",Arial,sans-serif!important;letter-spacing:0!important}
-.primary{background:#fff!important;color:#000!important}
-.primary:hover:not(:disabled){background:#dfdfdf!important}
-.outline{background:#111!important;color:#eee!important}
-.outline:hover:not(:disabled){background:#222!important}
-.metrics{border-color:#262626!important}
-.metric{border-color:#262626!important;padding:19px 3vw!important}
-.metric span{font-size:10px!important;color:#888!important}
-.metric strong{font:600 clamp(21px,2.2vw,32px) "Helvetica Neue",Arial,sans-serif!important;letter-spacing:-.03em!important;color:#f5f5f5!important}
-.metric small{color:#777!important}
-.root :is(input,select,textarea):focus-visible{outline:1px solid #fff;outline-offset:2px}
-.root :is(button,a):focus-visible{outline:2px solid #fff;outline-offset:2px}
-@media(max-width:800px){.top{height:auto!important;min-height:59px;padding:12px 16px}.titleRow{grid-template-columns:1fr!important;padding:32px 18px!important}.connectPanel{padding:18px!important}.metric{padding:18px!important}}
