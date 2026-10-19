@@ -3,11 +3,11 @@
 import Link from "next/link";
 import {useCallback,useEffect,useMemo,useState} from "react";
 import {
- ArrowDownToLine,ArrowLeftRight,ArrowRight,ArrowUpRight,Bell,
+ ArrowUpRight,
  CandlestickChart,ChartNoAxesCombined,Check,ChevronDown,ChevronsLeft,
- ChevronRight,CircleHelp,Clock3,Expand,Globe2,History,
+ ChevronRight,CircleHelp,History,
  Layers3,LayoutGrid,Menu,MoreHorizontal,PanelLeftClose,PanelLeftOpen,
- Plus,Search,Settings2,ShieldCheck,SlidersHorizontal,Star,
+ Search,Settings2,ShieldCheck,SlidersHorizontal,Star,
  TrendingUp,Wallet,X
 } from "lucide-react";
 import {motion} from "motion/react";
@@ -121,7 +121,7 @@ export function ProfessionalTerminal(){
   const m=TERMINAL_PAIRS[id];
   const matched=(id+" "+m.name).toLowerCase().includes(query.trim().toLowerCase());
   if(!matched)return false;
-  return marketFilter==="All"||marketFilter==="Top"||marketFilter==="New"||
+  return marketFilter==="All"||(marketFilter==="Top"&&marketNames.indexOf(id)<5)||(marketFilter==="New"&&marketNames.indexOf(id)>=5)||
    (marketFilter==="Favorites"&&favorites.includes(id))||
    (marketFilter==="Stocks"&&false);
  });
@@ -307,7 +307,7 @@ export function ProfessionalTerminal(){
         <Link href="/status/wiring">VIEW SYSTEM READINESS <ArrowUpRight size={14}/></Link>
        </div>}
       </section>
-      <section className={styles.tradeSection} aria-label="Demo order execution">
+      <section id="symbiotic-order-entry" className={styles.tradeSection} aria-label="Demo order execution">
        <div className={styles.panelTabs}>
         <button className={styles.selectedTab}>Trade</button>
         <button onClick={()=>flash("Use the chart tools above for moving averages and timeframes.")}>Tools</button>
