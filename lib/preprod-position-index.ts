@@ -58,7 +58,8 @@ function market(value:unknown):string{
 }
 function fieldList(input:unknown,count:number):unknown[]{
  const datum=record(input);
- if(datum.constructor!==0&&datum.alternative!==0)throw Error("Unexpected Aiken datum constructor");
+ const constructorIndex=Object.hasOwn(datum,"constructor")?datum["constructor" as string]:datum.alternative;
+ if(constructorIndex!==0)throw Error("Unexpected Aiken datum constructor");
  if(!Array.isArray(datum.fields)||datum.fields.length!==count)throw Error("Unexpected Aiken datum fields");
  return datum.fields;
 }
