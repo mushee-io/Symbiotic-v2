@@ -21,3 +21,31 @@
 .proofPanel a{font:10px var(--mono);color:#c9ff3d;text-decoration:none}
 @media(max-width:1100px){.proofGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:620px){.proofGrid{grid-template-columns:1fr 1fr}.proofPanel{padding:14px}}
+
+
+/* Terminal-style RWA market explorer — no OKX black/white override. */
+.root{--text-primary:#f2eedb;--accent:#c9ff3d;--border:rgba(242,238,219,.13);
+ background:#06100f;color:#f2eedb;font-family:var(--mono)}
+.banner{background:#0b1613;padding:12px 3vw;border-color:#263a30;font-size:10px}
+.grid{grid-template-columns:260px minmax(0,1fr) 390px;min-height:calc(100vh - 130px);
+ border-top:1px solid #293d30}
+.sidebar{background:#071310;border-right-color:#2d4236;padding:16px 12px}
+.subhead{font-size:11px;letter-spacing:.07em}
+.sidebar>input{background:#0c1c15;color:#f2eedb;border-color:#34513c;font-size:12px}
+.categories button{background:#101e16;color:#94a995;border-color:#2b4234}
+.categories .activeCategory{background:#1e321c;color:#c9ff3d;border-color:#c9ff3d}
+.assetList>button{border-color:#25372b}
+.assetList>button:hover,.assetList>.selectedAsset{background:#18291f}
+.assetIcon,.bigIcon{border-radius:2px;background:#20311d;color:#d4fa78;border-color:#526b45}
+.market{background:#07100f}
+.marketTop{padding:16px 20px;border-color:#2b3b30}
+.identity strong{font-size:14px}
+.topMetrics span{font-size:9px}
+.sessionStrip{background:#0e2018;color:#d0debd}
+.chartHeader{padding:18px 20px 9px}
+.chartHeader h1{font-size:25px;font-weight:600;letter-spacing:-.04em}
+.eyebrow{color:#c9ff3d}
+.testTag{background:#20321b;border-color:#3a5936;color:#c9ff3d}
+.root input:focus-visible,.root button:focus-visible,.root a:focus-visible{outline:2px solid #c9ff3d;outline-offset:2px}
+@media(max-width:1250px){.grid{grid-template-columns:225px minmax(0,1fr) 315px}}
+@media(max-width:950px){.grid{grid-template-columns:minmax(0,1fr)!important}.sidebar{border-right:0;border-bottom:1px solid #304334}}
