@@ -120,7 +120,7 @@ export function LaceDemoValidatorDeploy(){
    );
    const needed=BigInt(v.referenceReserveLovelace)+2_000_000n;
    if(adaOnly.reduce((a,u)=>a+BigInt(u.output.amount[0].quantity),0n)<needed)
-    throw Error("Not enough ADA-only testnet UTxOs: need "+ada(needed)+" for this deployment and estimated fee");
+    throw Error("Not enough ADA-only testnet UTxOs: need "+ada(needed.toString())+" for this deployment and estimated fee");
    setMessage("Building "+v.name+" reference-script deployment. Review the Lace transaction carefully.");
    const unsigned=await new MeshTxBuilder()
     .txOut(address,[{unit:"lovelace",quantity:v.referenceReserveLovelace}])
