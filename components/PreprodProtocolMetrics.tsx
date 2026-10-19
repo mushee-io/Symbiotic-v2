@@ -34,7 +34,7 @@ export function PreprodProtocolMetrics(){
  },[]);
  const metrics=[
   ["OPEN PERPETUAL POSITIONS",state.activePerpetualPositions?.toLocaleString("en-GB")??"—"],
-  ["OPEN BTC/PERP NOTIONAL",stable(state.perpetualOpenNotionalBaseUnits)+" test sUSD"],
+  ["PERP OPEN NOTIONAL",stable(state.perpetualOpenNotionalBaseUnits)+" test sUSD"],
   ["OPEN OPTIONS",state.openOptionPositions?.toLocaleString("en-GB")??"—"],
   ["LOCKED POSITION COLLATERAL",stable(state.lockedTestStableBaseUnits)+" test sUSD"]
  ];
