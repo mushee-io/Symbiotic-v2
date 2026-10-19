@@ -27,7 +27,8 @@ export async function POST(request:Request){
   },key);
   // Confirm the reference output remains unspent, not merely historically confirmed.
   const utxos=await provider.fetchAddressUTxOs(input.address);
-  if(!utxos.some(x=>x.input.txHash.toLowerCase()===input.txHash!.toLowerCase()&&x.input.outputIndex===0))
+  const confirmedHash=input.txHash.toLowerCase();
+  if(!utxos.some(x=>x.input.txHash.toLowerCase()===confirmedHash&&x.input.outputIndex===0))
    throw Error("Deployed reference output is already spent or missing");
   return NextResponse.json({network:"preprod",verified:true,validator:input.name,
    scriptHash:validator.scriptHash,scriptAddress:validator.scriptAddress,
