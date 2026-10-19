@@ -195,7 +195,7 @@ export function ProfessionalTerminal(){
    const total=rows.slice(0,i+1).reduce((sum,l)=>sum+l.size,0);
    return <button type="button" className={styles.bookRow} key={ask?"a"+i:"b"+i}
     onClick={()=>choosePrice(row.price)} title="Use this reference price in the demo limit order">
-    <span className={ask?styles.askPrice:styles.bidPrice}>{fmt(row.price,row.price>=1000?2:4)}</span>
+    <span className={ask?styles.askPrice:styles.bidPrice}>{fmt(row.price,row.price>=1000?precision:Math.max(4,precision))}</span>
     <span>{fmt(row.size,4)}</span><span>{fmt(total,4)}</span>
     <i className={ask?styles.redDepth:styles.greenDepth}
       style={{width:`${Math.min(95,15+row.size/bookMax*70)}%`}} aria-hidden="true"/>
@@ -240,7 +240,7 @@ export function ProfessionalTerminal(){
      {filtered.length===0&&<div className={styles.emptyNotice}>No markets match this filter.</div>}
      {filtered.map(id=>{
       const m=TERMINAL_PAIRS[id],isActive=pair===id;
-      const reference=id===pair?snapshot.price:null;
+      const reference=id===pair?snapshot.price:TERMINAL_PAIRS[id].base;
       return <div className={`${styles.assetRow} ${isActive?styles.assetActive:""}`} key={id}>
        <button className={styles.star} type="button" aria-label={(favorites.includes(id)?"Remove ":"Add ")+m.symbol+" favourite"} onClick={()=>setFavorites(old=>old.includes(id)?old.filter(x=>x!==id):[...old,id])}>
         <Star size={17} fill={favorites.includes(id)?"#c7c7c7":"none"}/>
@@ -248,7 +248,7 @@ export function ProfessionalTerminal(){
        <button className={styles.assetPick} onClick={()=>setPair(id)} type="button" aria-pressed={isActive}>
         <span className={styles.coin} data-coin={m.symbol}>{m.symbol==="BTC"?"₿":m.symbol.slice(0,1)}</span>
         <span className={styles.coinMeta}><b>{m.symbol}</b><small>{m.name}</small></span>
-        <span className={styles.coinPrice}><b>{reference!==null?fmt(reference,reference>10?2:4):"—"}</b><small className={moveUp&&isActive?styles.positive:styles.subtle}>{reference!==null?percent(snapshot.changePct):"Select to view"}</small></span>
+        <span className={styles.coinPrice}><b>{id===pair?"":"~"}{fmt(reference,reference>10?2:4)}</b><small className={moveUp&&isActive?styles.positive:styles.subtle}>{id===pair?percent(snapshot.changePct):"SAMPLE · DEMO"}</small></span>
        </button>
       </div>;
      })}
