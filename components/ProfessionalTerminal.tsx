@@ -31,20 +31,20 @@ const intervals=[["1m",60],["5m",300],["15m",900],["1h",3600],["4h",21600],["1D"
 const fmt=(value:number|undefined|null,digits=2)=>typeof value==="number"&&Number.isFinite(value)?
  value.toLocaleString("en-US",{minimumFractionDigits:digits,maximumFractionDigits:digits}):"—";
 const compact=(v:number)=>Number.isFinite(v)&&v>0?v.toLocaleString("en-US",{maximumFractionDigits:5}):"—";
-const usd=(v:number)=>"$"+fmt(v,2);
+const formatMoney=(v:number,unit:"USD"|"EUR")=>(unit==="EUR"?"€":"$")+fmt(v,2);
 function percent(p:number|null|undefined){
  return typeof p==="number"&&Number.isFinite(p)?(p>=0?"+":"")+p.toFixed(2)+"%":"—";
 }
 const now=()=>new Date().toISOString();
 const marketNames=Object.keys(TERMINAL_PAIRS) as TerminalPair[];
-const emptyBalances={USD:100000, BTC:2, ETH:6, SOL:100, ADA:1000,DOGE:900,
+const emptyBalances={USD:100000, EUR:100000, BTC:2, ETH:6, SOL:100, ADA:1000,DOGE:900,
  XRP:1500,BCH:2,AVAX:10,LTC:8,ZEC:6};
 type BalanceKey=keyof typeof emptyBalances;
 
 export function ProfessionalTerminal(){
- const [pair,setPair]=useState<TerminalPair>("BTC-USD");
+ const [pair,setPair]=useState<TerminalPair>("BTC-EUR");
  const [interval,setIntervalValue]=useState(900);
- const [snapshot,setSnapshot]=useState<TerminalSnapshot>(()=>demoSnapshot("BTC-USD"));
+ const [snapshot,setSnapshot]=useState<TerminalSnapshot>(()=>demoSnapshot("BTC-EUR"));
  const [loading,setLoading]=useState(true);
  const [marketError,setMarketError]=useState("");
  const [query,setQuery]=useState("");
@@ -111,12 +111,14 @@ export function ProfessionalTerminal(){
  },[pair,interval]);
 
  const selected=TERMINAL_PAIRS[pair];
+ const quote:"EUR"|"USD"=pair.endsWith("-EUR")?"EUR":"USD";
+ const money=(v:number)=>formatMoney(v,quote);
  const base=selected.symbol as BalanceKey;
  const marketPrice=snapshot.price;
  const chartPrice=snapshot.candles.at(-1)?.close??marketPrice;
  const limitPrice=Number(priceText)||marketPrice;
  const notional=Number(quantity)*((orderMode==="MARKET")?marketPrice:limitPrice);
- const availableQuote=balances.USD??0,availableBase=balances[base]??0;
+ const availableQuote=balances[quote]??0,availableBase=balances[base]??0;
  const filtered=marketNames.filter(id=>{
   const m=TERMINAL_PAIRS[id];
   const matched=(id+" "+m.name).toLowerCase().includes(query.trim().toLowerCase());
@@ -173,7 +175,7 @@ export function ProfessionalTerminal(){
   if(filled){
    setBalances(old=>{
     const existing=old[base]??0;
-    return {...old,USD:(old.USD??0)+(side==="BUY"?-total:total),
+    return {...old,[quote]:(old[quote]??0)+(side==="BUY"?-total:total),
      [base]:existing+(side==="BUY"?qty:-qty)};
    });
   }else{
@@ -256,7 +258,7 @@ export function ProfessionalTerminal(){
    <div className={styles.centerArea}>
     <div className={styles.ticker}>
      {!sidebarOpen&&<button className={styles.expandSidebar} title="Show markets" aria-label="Show markets" onClick={()=>setSidebarOpen(true)}><PanelLeftOpen size={20}/></button>}
-     <button type="button" className={styles.pairSelect} onClick={()=>setSidebarOpen(true)}><span className={styles.bigCoin}>{selected.symbol==="BTC"?"₿":selected.symbol[0]}</span><strong>{selected.symbol}/USD</strong><ChevronDown size={17}/></button>
+     <button type="button" className={styles.pairSelect} onClick={()=>setSidebarOpen(true)}><span className={styles.bigCoin}>{selected.symbol==="BTC"?"₿":selected.symbol[0]}</span><strong>{selected.symbol}/{quote}</strong><ChevronDown size={17}/></button>
      <button type="button" className={styles.tickerStar} aria-label="Toggle current market favourite" onClick={()=>setFavorites(old=>old.includes(pair)?old.filter(x=>x!==pair):[...old,pair])}>
       <Star size={18} fill={favorites.includes(pair)?"#eeeeee":"none"}/>
      </button>
@@ -319,24 +321,24 @@ export function ProfessionalTerminal(){
          <div className={styles.modeTabs}>{(["LIMIT","MARKET","TP/SL"] as Kind[]).map(name=><button key={name}
           className={orderMode===name?styles.modeActive:""} onClick={()=>setOrderMode(name)}>{name==="LIMIT"?"Limit":name==="MARKET"?"Market":"TP/SL"}</button>)}</div>
          <div className={styles.buySellTabs}><button className={side==="BUY"?styles.buyActive:""} onClick={()=>{setSide("BUY");setAllocation(0)}}>Buy {selected.symbol}</button><button className={side==="SELL"?styles.sellActive:""} onClick={()=>{setSide("SELL");setAllocation(0)}}>Sell {selected.symbol}</button></div>
-         <div className={styles.available}>Available <strong>{side==="BUY"?usd(availableQuote):compact(availableBase)+" "+selected.symbol}</strong> <span>· DEMO WALLET</span></div>
-         {orderMode!=="MARKET"?<label className={styles.field}><span>Price (USD)</span><input inputMode="decimal" value={priceText} placeholder={fmt(marketPrice,2)} onChange={e=>setPriceText(e.target.value)}/><b>USD</b></label>:
-          <label className={styles.field}><span>Price</span><div className={styles.marketOrderField}>Market reference · ~ {usd(marketPrice)}</div></label>}
+         <div className={styles.available}>Available <strong>{side==="BUY"?money(availableQuote):compact(availableBase)+" "+selected.symbol}</strong> <span>· DEMO WALLET</span></div>
+         {orderMode!=="MARKET"?<label className={styles.field}><span>Price ({quote})</span><input inputMode="decimal" value={priceText} placeholder={fmt(marketPrice,2)} onChange={e=>setPriceText(e.target.value)}/><b>{quote}</b></label>:
+          <label className={styles.field}><span>Price</span><div className={styles.marketOrderField}>Market reference · ~ {money(marketPrice)}</div></label>}
          <label className={styles.field}><span>Amount ({selected.symbol})</span><input inputMode="decimal" value={quantity} onChange={e=>{setQuantity(e.target.value);setAllocation(0)}}/><b>{selected.symbol}</b></label>
          <div className={styles.percentButtons}>{[25,50,75,100].map(p=><button type="button" key={p} className={allocation===p?styles.percentActive:""} onClick={()=>choosePercent(p)}>{p}%</button>)}</div>
          {orderMode==="TP/SL"&&<div className={styles.triggerInputs}>
           <label>Take profit (USD)<input inputMode="decimal" value={takeProfit} onChange={e=>setTakeProfit(e.target.value)}/></label>
           <label>Stop loss (USD)<input inputMode="decimal" value={stopLoss} onChange={e=>setStopLoss(e.target.value)}/></label>
          </div>}
-         <div className={styles.orderSummary}><span>Estimated total <strong>{Number.isFinite(notional)&&notional>=0?usd(notional):"—"}</strong></span>
+         <div className={styles.orderSummary}><span>Estimated total <strong>{Number.isFinite(notional)&&notional>=0?money(notional):"—"}</strong></span>
           <span>Execution <strong>LOCAL DEMO ONLY</strong></span></div>
          <button type="button" className={side==="BUY"?styles.buyButton:styles.sellButton} onClick={placeOrder}>Demo {side==="BUY"?"Buy":"Sell"} {selected.symbol}</button>
          <p className={styles.formNotice}><ShieldCheck size={14}/> No deposit, exchange submission, real balance change or Cardano signing occurs here. <Link href="/trade/advanced">Preprod tools ↗</Link></p>
         </div>
         <div className={styles.tradeAside}>
          <div className={styles.tradeAsideHead}><span>Position preview</span><span>READ ONLY</span></div>
-         <div className={styles.tradeAsideGrid}><span>Market</span><strong>{selected.symbol}/USD SPOT REFERENCE</strong><span>Est. order size</span><strong>{compact(Number(quantity))} {selected.symbol}</strong>
-          <span>Est. order value</span><strong>{Number.isFinite(notional)?usd(notional):"—"}</strong><span>Fee estimate</span><strong>NOT CALCULATED</strong></div>
+         <div className={styles.tradeAsideGrid}><span>Market</span><strong>{selected.symbol}/{quote} SPOT REFERENCE</strong><span>Est. order size</span><strong>{compact(Number(quantity))} {selected.symbol}</strong>
+          <span>Est. order value</span><strong>{Number.isFinite(notional)?money(notional):"—"}</strong><span>Fee estimate</span><strong>NOT CALCULATED</strong></div>
          <div className={styles.tradeAsideBottom}><TrendingUp size={20}/> Preprod derivatives risk and wallet-authorised transaction construction remain in the advanced workbench.</div>
          <Link href="/trade/advanced" className={styles.advancedButton}>OPEN ADVANCED DERIVATIVES <ArrowUpRight size={16}/></Link>
         </div>
@@ -359,11 +361,11 @@ export function ProfessionalTerminal(){
       <div className={styles.panelTabs}><button className={bookTab==="Order book"?styles.selectedTab:""} onClick={()=>setBookTab("Order book")}>Order book</button><button className={bookTab==="Last trades"?styles.selectedTab:""} onClick={()=>setBookTab("Last trades")}>Last trades</button><span className={styles.panelSpacer}/><button aria-label="Order book display settings" title="Order book precision" onClick={()=>setPrecision(p=>p===2?3:p===3?4:2)}><SlidersHorizontal size={17}/></button><button title="Hide order book" aria-label="Hide order book" onClick={()=>setBookOpen(false)}><X size={16}/></button></div>
       {bookTab==="Order book"?<>
        <div className={styles.bookModes}><span>Reference depth</span><button onClick={()=>setPrecision(p=>Math.max(0,p-1))}>−</button><span>{Math.pow(10,-precision).toFixed(precision)}</span><button onClick={()=>setPrecision(p=>Math.min(6,p+1))}>+</button></div>
-       <div className={styles.bookTitles}><span>Price (USD)</span><span>Amount ({selected.symbol})</span><span>Total</span></div>
+       <div className={styles.bookTitles}><span>Price ({quote})</span><span>Amount ({selected.symbol})</span><span>Total</span></div>
        <div className={styles.depthLists}><div>{orderBook([...sortedAsks].reverse(),true)}</div>
        <div className={styles.spotSeparator}><strong className={moveUp?styles.positive:styles.negative}>{fmt(marketPrice,2)} {moveUp?"↑":"↓"}</strong><small>{snapshot.source==="DEMO"?"DEMO DEPTH":"PUBLIC COINBASE DEPTH"}</small></div>
        <div>{orderBook(sortedBids,false)}</div></div>
-      </>:<><div className={styles.bookTitles}><span>Time</span><span>Price (USD)</span><span>Amount</span></div><div className={styles.tradesList}>
+      </>:<><div className={styles.bookTitles}><span>Time</span><span>Price ({quote})</span><span>Amount</span></div><div className={styles.tradesList}>
        {snapshot.trades.length?snapshot.trades.map((t,i)=><div className={styles.tradeRow} key={i}><span>{new Date(t.time).toLocaleTimeString()}</span><span className={t.side==="BUY"?styles.positive:styles.negative}>{fmt(t.price,2)}</span><span>{fmt(t.size,4)}</span></div>):<div className={styles.emptyNotice}>Recent public trades currently unavailable.</div>}
       </div></>}
       <div className={styles.bookFoot}>{snapshot.source==="DEMO"?"DEMO SNAPSHOT · NOT A REAL ORDER BOOK":"EXTERNAL PUBLIC REFERENCE · NOT SYMBIOTIC DEPTH"}</div>
