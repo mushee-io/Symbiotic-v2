@@ -17,7 +17,7 @@ async function exchange(path:string):Promise<unknown>{
 }
 export async function GET(request:Request){
  const url=new URL(request.url);
- const raw=url.searchParams.get("pair")??"BTC-USD";
+ const raw=url.searchParams.get("pair")??"BTC-EUR";
  if(!isTerminalPair(raw))return NextResponse.json({error:"Unsupported reference market"},{status:400});
  const requestedGranularity=Number(url.searchParams.get("granularity")??900);
  const granularity=[60,300,900,3600,21600,86400].includes(requestedGranularity)?requestedGranularity:900;
@@ -46,7 +46,7 @@ export async function GET(request:Request){
   const stats=statsResult.status==="fulfilled"?statsResult.value as Record<string,unknown>:{};
   const open24=validPositive(stats.open);
   const result:TerminalSnapshot={
-   pair:raw,currency:"USD",source:"COINBASE_PUBLIC",observedAt:new Date().toISOString(),
+   pair:raw,currency:raw.endsWith("-EUR")?"EUR":"USD",source:"COINBASE_PUBLIC",observedAt:new Date().toISOString(),
    price,
    changePct:open24?((price/open24)-1)*100:null,
    changeUsd:open24?price-open24:null,
