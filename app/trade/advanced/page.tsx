@@ -38,6 +38,14 @@ const navLabel: Record<View, string> = {
 
 export default function TradePage() {
   const [view, setView] = useState<View>("PERPETUALS");
+  // Deep links from the shared app navigation retain the tabbed derivatives UI.
+  useEffect(()=>{
+    const query=new URLSearchParams(window.location.search).get("view");
+    if(query==="options")setView("OPTIONS");
+    else if(query==="notional")setView("NOTIONAL");
+    else setView("PERPETUALS");
+  },[]);
+
   const [side, setSide] = useState<PerpSide>("LONG");
   const [orderType, setOrderType] = useState<PerpOrderType>("MARKET");
   const [entry, setEntry] = useState(60_000);
@@ -383,7 +391,7 @@ export default function TradePage() {
         </section>
       ) : null}
 
-      <footer className="terminal-footer"><span>SYMBIOTIC / CARDANO DERIVATIVES INFRASTRUCTURE</span><span>NETWORK: PREPROD ●</span></footer>
+      <footer className="terminal-footer"><span>SYMBIOTIC / CARDANO DERIVATIVES INFRASTRUCTURE</span><Link href="/trade/spot">PUBLIC SPOT REFERENCE ↗</Link><span>NETWORK: PREPROD ●</span></footer>
     </main>
   );
 }
