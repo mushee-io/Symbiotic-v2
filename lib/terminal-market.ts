@@ -3,7 +3,8 @@
  * evidence of Symbiotic venue liquidity.
  */
 export const TERMINAL_PAIRS={
- "BTC-USD":{symbol:"BTC",name:"Bitcoin",base:73772},
+ "BTC-EUR":{symbol:"BTC",name:"Bitcoin",base:73772},
+ "BTC-USD":{symbol:"BTC",name:"Bitcoin",base:78820},
  "ETH-USD":{symbol:"ETH",name:"Ethereum",base:3950},
  "SOL-USD":{symbol:"SOL",name:"Solana",base:205},
  "ADA-USD":{symbol:"ADA",name:"Cardano",base:.72},
@@ -21,7 +22,7 @@ export type TerminalCandle={time:number;open:number;high:number;low:number;close
 export type TerminalLevel={price:number;size:number};
 export type TerminalTrade={time:string;price:number;size:number;side:"BUY"|"SELL"};
 export type TerminalSnapshot={
- pair:TerminalPair;currency:"USD";source:"COINBASE_PUBLIC"|"DEMO";
+ pair:TerminalPair;currency:"USD"|"EUR";source:"COINBASE_PUBLIC"|"DEMO";
  observedAt:string;price:number;changePct:number|null;changeUsd:number|null;
  high24:number|null;low24:number|null;volume24:number|null;
  candles:TerminalCandle[];bids:TerminalLevel[];asks:TerminalLevel[];
@@ -82,7 +83,7 @@ export function demoSnapshot(pair:TerminalPair,intervalSeconds=900,nowSeconds=Ma
   time:new Date((aligned-i*40)*1000).toISOString(),price:price*(1+Math.sin(i)*.0006),
   size:.012+((i*7)%15)/100,side:i%2===0?"BUY" as const:"SELL" as const
  }));
- return {pair,currency:"USD",source:"DEMO",observedAt:new Date(nowSeconds*1000).toISOString(),
+ return {pair,currency:pair.endsWith("-EUR")?"EUR":"USD",source:"DEMO",observedAt:new Date(nowSeconds*1000).toISOString(),
   price,changePct:1.49,changeUsd:price*.0149,high24:price*1.02,low24:price*.977,
   volume24:null,candles,bids,asks,trades,
   reason:"Deterministic demonstration data. No exchange fill or Symbiotic market liquidity is implied."};
