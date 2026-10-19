@@ -69,3 +69,42 @@
 .calcError{color:#ffa5a0;font:12px/1.6 var(--mono)}
 @media(max-width:900px){.calcGrid{grid-template-columns:1fr}}
 @media(max-width:600px){.calcForm,.metrics{grid-template-columns:1fr}}
+
+
+/* Shared Symbiotic terminal visual standard from the BTC perpetuals screen. */
+.root{--text-primary:#f2eedb;--text-secondary:#91a494;--accent:#c9ff3d;--border:rgba(242,238,219,.13);
+ background:#06100f;color:var(--text-primary);font-family:var(--mono)}
+.subnav{padding:0 3vw;min-height:48px;gap:0;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+ border-color:var(--border);background:#0b1514}
+.subnav a{padding:16px 17px;margin:0;border:0;border-bottom:2px solid transparent;
+ color:#9bae9e;font-size:10px;letter-spacing:.065em;white-space:nowrap}
+.subnav a:hover,.subnav .active{background:#101f1b;border-bottom-color:#c9ff3d;color:#f2eedb}
+.hero{min-height:255px;padding:42px 3vw 35px;background:#071310;gap:36px;
+ grid-template-columns:minmax(0,1.6fr) minmax(245px,.4fr)}
+.eyebrow{font-size:10px;letter-spacing:.11em}
+.hero h1{font-size:clamp(38px,5vw,66px);line-height:1.05;letter-spacing:-.06em;font-weight:600;margin:18px 0}
+.hero p{font:12px/1.75 var(--mono);color:#a1b4a6}
+.heroAction{padding-left:21px;gap:10px;border-color:#304338}
+.heroAction span{font-size:9px}
+.heroAction strong{font-size:13px}
+.section{padding:31px 3vw 40px}
+.sectionHead h2{font:600 clamp(19px,2.6vw,30px)/1.1 var(--mono);letter-spacing:-.04em}
+.grid,.features,.summaryGrid{gap:1px;background:#2b4233;border:1px solid #2b4233}
+.card{min-height:250px;padding:27px;background:#0d1b16;border:0}
+.card:hover{background:#17271d}
+.card h3{font-size:clamp(30px,3.1vw,45px);letter-spacing:-.065em}
+.card p{font-size:11px;line-height:1.78}
+.cardTop small{color:#e9bb93;background:#251d16;border-color:#634a31}
+.summary,.feature{background:#0c1914;border:0;min-height:160px}
+.featureHeader{font-size:10px}
+.featureHeader small{font-size:9px}
+.callout{border-left:2px solid #c9ff3d;background:#121f16;color:#b9cbb7}
+.calculator{padding:30px 3vw;border-color:var(--border)}
+.calcField{background:#0d1913;border-color:#344b3b}
+.calcField input{background:#06100e;color:#f2eedb;border-color:#364d3d}
+.calcResults{background:#0c1b14}
+.link{background:#18251b;color:#f2eedb;border-color:#46613b}
+.link:hover{background:#233827}
+.foot{padding:21px 3vw;color:#8fa293;border-color:var(--border)}
+@media(max-width:950px){.hero{grid-template-columns:1fr}.heroAction{border-left:0;border-top:1px solid #38513e;padding:15px 0 0}}
+@media(max-width:650px){.hero{padding:31px 20px}.section{padding:25px 20px}.calculator{padding:24px 20px}.grid,.features,.summaryGrid{grid-template-columns:1fr}}
