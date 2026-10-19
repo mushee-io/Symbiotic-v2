@@ -3,7 +3,7 @@
 import {useEffect,useMemo,useRef} from "react";
 import {
  createChart,CandlestickSeries,LineSeries,HistogramSeries,
- CrosshairMode,type UTCTimestamp
+ CrosshairMode,ColorType,type UTCTimestamp
 } from "lightweight-charts";
 import type {TerminalCandle} from "@/lib/terminal-market";
 
@@ -32,12 +32,12 @@ export function ProfessionalCandleChart({candles,enabled}:{candles:TerminalCandl
   const chart=createChart(element,{
    width:element.clientWidth,height:element.clientHeight||465,
    autoSize:false,
-   layout:{background:{type:"solid",color:"#000000"},textColor:"#a1a1a1",fontFamily:"Arial,sans-serif",fontSize:11},
+   layout:{background:{type:ColorType.Solid,color:"#000000"},textColor:"#a1a1a1",fontFamily:"Arial,sans-serif",fontSize:11},
    grid:{vertLines:{color:"#191919"},horzLines:{color:"#191919"}},
    crosshair:{mode:CrosshairMode.Normal},
    timeScale:{timeVisible:true,secondsVisible:false,borderColor:"#262626",rightOffset:6,barSpacing:9,minBarSpacing:3},
    rightPriceScale:{borderColor:"#262626",scaleMargins:{top:.09,bottom:.23}},
-   localization:{priceFormatter:val=>Number(val).toLocaleString("en-US",{maximumFractionDigits:6})},
+   localization:{priceFormatter:(val:number)=>Number(val).toLocaleString("en-US",{maximumFractionDigits:6})},
    handleScroll:true,handleScale:true
   });
   const price=chart.addSeries(CandlestickSeries,{
