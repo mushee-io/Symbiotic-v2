@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {PreprodProtocolActivity} from "@/components/PreprodProtocolActivity";
+import {PreprodProtocolMetrics} from "@/components/PreprodProtocolMetrics";
 import {PreprodPositions} from "@/components/PreprodPositions";
 import { BrowserWallet, type UTxO } from "@meshsdk/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -359,6 +360,7 @@ export function PreprodCommandCenter({ view }: { view: View }) {
     </> : null}
 
     {view === "stats" ? <>
+      <PreprodProtocolMetrics />
       <PreprodProtocolActivity />
       <div className={styles.metrics}>
         <Metric label="PREPROD BLOCK HEIGHT" value={network ? compact(network.latestBlock.height) : "—"} subtitle="LATEST INDEXED BLOCK" />
