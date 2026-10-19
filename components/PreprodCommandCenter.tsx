@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {PreprodProtocolActivity} from "@/components/PreprodProtocolActivity";
+import {PreprodPositions} from "@/components/PreprodPositions";
 import { BrowserWallet, type UTxO } from "@meshsdk/core";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -281,6 +282,7 @@ export function PreprodCommandCenter({ view }: { view: View }) {
     </section>
 
     {view === "portfolio" ? <>
+      <PreprodPositions address={address} refreshCounter={refreshCounter}/>
       <div className={styles.metrics}>
         <Metric label="ADA (TESTNET)" value={portfolio ? formatAda(portfolio.adaLovelace) + " ₳" : "—"} subtitle="ADDRESS BALANCE · NOT USD" />
         <Metric label="NATIVE TOKEN TYPES" value={portfolio ? compact(portfolio.nativeAssetTypes) : "—"} subtitle="NONZERO TOKENS AT ADDRESS" />
